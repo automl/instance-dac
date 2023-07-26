@@ -64,6 +64,7 @@ def main(cfg: DictConfig) -> None:
     if not cfg.evaluate:
         run_benchmark(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
+        agent = load_agent(cfg)
         evaluate(env, agent, cfg.num_eval_episodess)
 
 
