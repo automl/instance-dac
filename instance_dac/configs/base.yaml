@@ -16,6 +16,9 @@ benchmark_id: ???  # set in benchmark/...
 instance_set_id: ???  # set in benchmark/...
 num_episodes: ???  # set in benchmark/...
 
+evaluate: False
+num_eval_episodes: 10
+
 
 
 outdir: runs/${benchmark_id}

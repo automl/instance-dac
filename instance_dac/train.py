@@ -14,11 +14,13 @@ from dacbench.benchmarks import SigmoidBenchmark
 from dacbench.runner import run_benchmark
 from dacbench.wrappers import PerformanceTrackingWrapper, StateTrackingWrapper
 from dacbench.abstract_env import AbstractEnv
+from dacbench.abstract_agent import AbstractDACBenchAgent
 
 
 def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger]:
+    experiment_name = "train" if not cfg.evaluate else "eval"
     logger = Logger(
-        experiment_name="train",
+        experiment_name=experiment_name,
         output_path=Path("logs"),
         step_write_frequency=None,
         episode_write_frequency=None,
@@ -35,6 +37,20 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
     return env, logger
 
 
+def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, num_eval_episodes: int = 10):
+    for i in range(num_eval_episodes):
+        env.reset()
+        terminated, truncated = False, False
+        total_reward = 0
+        while not (terminated or truncated):
+            for a in [0, 1]:
+                observation, reward, terminated, truncated, info = env.last()
+                action = agent.act(state=observation, reward=reward)
+                env.step(action)
+            observation, reward, terminated, truncated, info = env.last()
+            total_reward += reward
+
+
 @hydra.main(config_path="configs", config_name="base.yaml")
 def main(cfg: DictConfig) -> None:
     cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
@@ -44,7 +60,10 @@ def main(cfg: DictConfig) -> None:
 
     env, logger = wrap_and_log(cfg, env)
 
-    run_benchmark(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
+    if not cfg.evauate:
+        run_benchmark(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
+    else:
+        evaluate(env, agent, cfg.num_eval_episodess)
 
 
 if __name__ == "__main__":
