@@ -1,0 +1,4 @@
+seaborn
+hydra-core
+hydra-colorlog
+hydra-joblib-launcher
