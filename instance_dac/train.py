@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import tqdm
 import hydra
 from omegaconf import DictConfig, OmegaConf
 from rich import print as printr
@@ -18,7 +19,7 @@ from dacbench.abstract_agent import AbstractDACBenchAgent
 
 
 def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger]:
-    ipath = Path(cfg.benchmark.config.instance_set_path)
+    ipath = Path(cfg.benchmark.config.test_set_path)
     experiment_name = "train" if not cfg.evaluate else f"eval/{ipath.stem}"
     logger = Logger(
         experiment_name=experiment_name,
@@ -35,22 +36,32 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
     # Add env to logger
     logger.set_env(env)
 
+    assert logger.env is not None
+
     return env, logger
 
 
-def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, num_eval_episodes: int = 10):
+def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = None, num_eval_episodes: int = 10):
+    if logger is not None:
+        logger.reset_episode()
+        logger.set_env(env)
+    
     n_instances = len(env.instance_set)
-    for i in range(num_eval_episodes * n_instances):
+    for i in tqdm.tqdm(range(num_eval_episodes * n_instances)):
         env.reset()
         terminated, truncated = False, False
         total_reward = 0
         while not (terminated or truncated):
-            for a in [0, 1]:
-                observation, reward, terminated, truncated, info = env.last()
-                action = agent.act(state=observation, reward=reward)
-                env.step(action)
+            observation, reward, terminated, truncated, info = env.last()
+            action = agent.act(state=observation, reward=reward)
+            env.step(action)
             observation, reward, terminated, truncated, info = env.last()
             total_reward += reward
+            if logger is not None:
+                logger.next_step()
+        if logger is not None:
+            logger.next_episode()
+    env.close()
 
 
 @hydra.main(config_path="configs", config_name="base.yaml")
@@ -66,8 +77,9 @@ def main(cfg: DictConfig) -> None:
         run_benchmark(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
         # agent = load_agent(cfg)
+        env.use_test_set()
         agent = RandomAgent(env=env)
-        evaluate(env, agent, cfg.num_eval_episodes)
+        evaluate(env, agent, logger, cfg.num_eval_episodes)
 
 
 if __name__ == "__main__":
