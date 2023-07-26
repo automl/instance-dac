@@ -4,3 +4,7 @@ hydra-colorlog
 hydra-joblib-launcher
 rich
 tqdm
+jax
+coax
+dm-haiku
+optax
