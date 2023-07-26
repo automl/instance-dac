@@ -3,5 +3,3 @@ hydra-core
 hydra-colorlog
 hydra-joblib-launcher
 rich
-etils
-importlib_resources
