@@ -29,6 +29,7 @@ make install-dev
 pip install -r requirements.txt
 git clone git@github.com:automl/DACBench.git
 cd DACBench
+git checkout instance_dac
 pip install -e .
 ```
 
