@@ -18,12 +18,7 @@ from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
 from instance_dac.agent import PPO
 
-import jax
-import jax.numpy as jnp
 import coax
-import haiku as hk
-from numpy import prod
-import optax
 
 
 def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger]:
@@ -40,6 +35,7 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
 
     env = PerformanceTrackingWrapper(env, logger=performance_logger)
     env = StateTrackingWrapper(env, logger=state_logger)
+    env = coax.wrappers.TrainMonitor(env, name=experiment_name)
 
     # Add env to logger
     logger.set_env(env)
@@ -100,7 +96,7 @@ def train(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = None,
                     env.record_metrics(metrics_pi)
 
                 agent.buffer.clear()
-                agent.pi_targ.soft_update(pi, tau=0.1)
+                agent.pi_targ.soft_update(agent.pi, tau=0.1)
 
             if logger is not None:
                 logger.next_step()
@@ -125,10 +121,13 @@ def main(cfg: DictConfig) -> None:
 
     env, logger = wrap_and_log(cfg, env)
 
+    # import pdb 
+    # print(env.action_space)
+    # pdb.set_trace()
 
     agent = PPO(env)
 
-    if not cfg.evauate:
+    if not cfg.evaluate:
         train(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
         # agent = load_agent(cfg)
