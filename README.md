@@ -1,9 +1,13 @@
 # Instance-DAC
 
+Runcommand
+```bash
+python instance_dac/train.py +benchmark=sigmoid_easy
+```
 
 
 ## Installation
-```
+```bash
 git clone https://github.com/automl/Instance-DAC.git
 cd Instance-DAC
 conda create -n instance_dac python=3.11
