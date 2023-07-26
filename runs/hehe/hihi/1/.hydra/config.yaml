@@ -1,0 +1,4 @@
+seed: 1
+benchmark: hehe
+instance_set: hihi
+outdir: runs/${benchmark}

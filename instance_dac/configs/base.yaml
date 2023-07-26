@@ -1,0 +1,23 @@
+defaults:
+  - _self_
+  - override hydra/job_logging: colorlog
+  - override hydra/hydra_logging: colorlog
+  - override hydra/launcher: joblib
+
+
+
+seed: 1
+benchmark: ???  # set in benchmark/...
+instance_set: ???  # set in benchmark/...
+
+
+
+outdir: runs/${benchmark}
+hydra:
+  run:
+    dir: ${outdir}/${instance_set}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${instance_set}/${seed}
+  launcher:
+    n_jobs: 4
