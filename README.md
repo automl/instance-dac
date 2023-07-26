@@ -18,6 +18,12 @@ pip install .
 
 # Install for development
 make install-dev
+
+
+pip install -r requirements.txt
+git clone git@github.com:automl/DACBench.git
+cd DACBench
+pip install -e .
 ```
 
 Documentation at https://automl.github.io/Instance-DAC/main

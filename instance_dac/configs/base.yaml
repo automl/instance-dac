@@ -7,17 +7,22 @@ defaults:
 
 
 seed: 1
-benchmark: ???  # set in benchmark/...
-instance_set: ???  # set in benchmark/...
+benchmark: 
+  # Seed is the same for each benchmark
+  # For the _target_ and other config args set in configs/benchmark/...
+  config:
+    seed: ${seed}
+benchmark_id: ???  # set in benchmark/...
+instance_set_id: ???  # set in benchmark/...
 
 
 
-outdir: runs/${benchmark}
+outdir: runs/${benchmark_id}
 hydra:
   run:
-    dir: ${outdir}/${instance_set}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: ${outdir}/${instance_set_id}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
   sweep:
     dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
-    subdir: ${instance_set}/${seed}
+    subdir: ${instance_set_id}/${seed}
   launcher:
     n_jobs: 4

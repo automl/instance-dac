@@ -2,5 +2,6 @@ seaborn
 hydra-core
 hydra-colorlog
 hydra-joblib-launcher
-dacbench
 rich
+etils
+importlib_resources
