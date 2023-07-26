@@ -13,9 +13,17 @@ from dacbench.logger import Logger, log2dataframe, load_logs
 from dacbench.agents.simple_agents import RandomAgent
 from dacbench.benchmarks import SigmoidBenchmark
 from dacbench.runner import run_benchmark
-from dacbench.wrappers import PerformanceTrackingWrapper, StateTrackingWrapper
+from dacbench.wrappers import PerformanceTrackingWrapper, StateTrackingWrapper,  ObservationWrapper
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
+from instance_dac.agent import PPO
+
+import jax
+import jax.numpy as jnp
+import coax
+import haiku as hk
+from numpy import prod
+import optax
 
 
 def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger]:
@@ -64,6 +72,40 @@ def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = No
     env.close()
 
 
+def train(env: AbstractEnv, agent: AbstractDACBenchAgent, num_episodes: int = 10):
+    for i in range(num_episodes):
+        done, truncated = False, False
+        s, info = env.reset()
+
+        while not (done or truncated):
+            a, logp = agent.pi_targ(s, return_logp=True)
+            s_next, r, done, truncated, info = env.step(a)
+
+            # trace rewards
+            agent.tracer.add(s, a, r, done or truncated, logp)
+            while agent.tracer:
+                agent.buffer.add(agent.tracer.pop())
+
+            # learn
+            if len(agent.buffer) >= agent.buffer.capacity:
+                for _ in range(int(4 * agent.buffer.capacity / 32)):  # 4 passes per round
+                    transition_batch = agent.buffer.sample(batch_size=32)
+                    metrics_v, td_error = agent.simpletd.update(transition_batch, return_td_error=True)
+                    metrics_pi = agent.ppo_clip.update(transition_batch, td_error)
+                    env.record_metrics(metrics_v)
+                    env.record_metrics(metrics_pi)
+
+                agent.buffer.clear()
+                agent.pi_targ.soft_update(pi, tau=0.1)
+
+            if done or truncated:
+                break
+
+            s = s_next
+
+    env.close()
+
+
 @hydra.main(config_path="configs", config_name="base.yaml")
 def main(cfg: DictConfig) -> None:
     cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
@@ -73,8 +115,11 @@ def main(cfg: DictConfig) -> None:
 
     env, logger = wrap_and_log(cfg, env)
 
-    if not cfg.evaluate:
-        run_benchmark(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
+
+    agent = PPO(env)
+
+    if not cfg.evauate:
+        train(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
         # agent = load_agent(cfg)
         env.use_test_set()

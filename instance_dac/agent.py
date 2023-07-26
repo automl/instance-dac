@@ -1,3 +1,6 @@
+# pylint: disable=function-redefined
+from dacbench.abstract_agent import AbstractDACBenchAgent
+
 import jax
 import jax.numpy as jnp
 import coax
@@ -5,20 +8,7 @@ import haiku as hk
 from numpy import prod
 import optax
 
-from dacbench.benchmarks import CMAESBenchmark
-from dacbench.wrappers import ObservationWrapper
-
-
-# the name of this script
-name = 'ppo'
-
-# the Pendulum MDP
-bench = CMAESBenchmark()
-env = bench.get_environment()
-env = ObservationWrapper(env)
-env = coax.wrappers.TrainMonitor(env, name=name, tensorboard_dir=f"./data/tensorboard/{name}")
-
-
+# Policy definitions
 def func_pi(S, is_training):
     shared = hk.Sequential((
         hk.Linear(8), jax.nn.relu,
@@ -39,6 +29,7 @@ def func_pi(S, is_training):
     return {'mu': mu(S), 'logvar': logvar(S)}
 
 
+# Value Function definition
 def func_v(S, is_training):
     seq = hk.Sequential((
         hk.Linear(8), jax.nn.relu,
@@ -49,55 +40,33 @@ def func_v(S, is_training):
     return seq(S)
 
 
-# define function approximators
-pi = coax.Policy(func_pi, env)
-v = coax.V(func_v, env)
+class PPO(AbstractDACBenchAgent):   
+    """
+        PPO agent for sigmoid
+    """
+    def __init__(self, env):
+        
+        
+        self.pi = coax.Policy(func_pi, env)
+        self.v = coax.V(func_v, env)
+
+        # target network
+        self.pi_targ = self.pi.copy()
+
+        # experience tracer
+        self.tracer = coax.reward_tracing.NStep(n=5, gamma=0.9)
+        self.buffer = coax.experience_replay.SimpleReplayBuffer(capacity=512)
 
 
-# target network
-pi_targ = pi.copy()
+        # policy regularizer (avoid premature exploitation)
+        self.policy_reg = coax.regularizers.EntropyRegularizer(pi, beta=0.01)
 
 
-# experience tracer
-tracer = coax.reward_tracing.NStep(n=5, gamma=0.9)
-buffer = coax.experience_replay.SimpleReplayBuffer(capacity=512)
+        # updaters
+        self.simpletd = coax.td_learning.SimpleTD(v, optimizer=optax.adam(1e-3))
+        self.ppo_clip = coax.policy_objectives.PPOClip(pi, regularizer=policy_reg, optimizer=optax.adam(1e-4))
+        
 
-
-# policy regularizer (avoid premature exploitation)
-policy_reg = coax.regularizers.EntropyRegularizer(pi, beta=0.01)
-
-
-# updaters
-simpletd = coax.td_learning.SimpleTD(v, optimizer=optax.adam(1e-3))
-ppo_clip = coax.policy_objectives.PPOClip(pi, regularizer=policy_reg, optimizer=optax.adam(1e-4))
-
-# train
-for _ in range(10):
-    done, truncated = False, False
-    s, info = env.reset()
-
-    while not (done or truncated):
-        a, logp = pi_targ(s, return_logp=True)
-        s_next, r, done, truncated, info = env.step(a)
-
-        # trace rewards
-        tracer.add(s, a, r, done or truncated, logp)
-        while tracer:
-            buffer.add(tracer.pop())
-
-        # learn
-        if len(buffer) >= buffer.capacity:
-            for _ in range(int(4 * buffer.capacity / 32)):  # 4 passes per round
-                transition_batch = buffer.sample(batch_size=32)
-                metrics_v, td_error = simpletd.update(transition_batch, return_td_error=True)
-                metrics_pi = ppo_clip.update(transition_batch, td_error)
-                env.record_metrics(metrics_v)
-                env.record_metrics(metrics_pi)
-
-            buffer.clear()
-            pi_targ.soft_update(pi, tau=0.1)
-
-        if done or truncated:
-            break
-
-        s = s_next
+    def act(self, state, reward):
+        
+        return self.pi_targ(state, return_false=True)
