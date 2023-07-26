@@ -72,7 +72,11 @@ def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = No
     env.close()
 
 
-def train(env: AbstractEnv, agent: AbstractDACBenchAgent, num_episodes: int = 10):
+def train(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = None, num_episodes: int = 10):
+    if logger is not None:
+        logger.reset_episode()
+        logger.set_env(env)
+
     for i in range(num_episodes):
         done, truncated = False, False
         s, info = env.reset()
@@ -98,10 +102,16 @@ def train(env: AbstractEnv, agent: AbstractDACBenchAgent, num_episodes: int = 10
                 agent.buffer.clear()
                 agent.pi_targ.soft_update(pi, tau=0.1)
 
+            if logger is not None:
+                logger.next_step()
+
             if done or truncated:
                 break
 
             s = s_next
+            
+        if logger is not None:
+            logger.next_episode()
 
     env.close()
 
