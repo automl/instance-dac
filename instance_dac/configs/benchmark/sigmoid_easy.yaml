@@ -7,3 +7,4 @@ benchmark:
 
 instance_set_id: 2D3M_train
 benchmark_id: Sigmoid
+num_episodes: 1000
