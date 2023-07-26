@@ -5,6 +5,12 @@ Runcommand
 python instance_dac/train.py +benchmark=sigmoid_easy
 ```
 
+Evaluate:
+Override the instance_set_path. Saved in train run dir under logs/eval/instance_set_path.
+```bash
+python instance_dac/train.py +benchmark=sigmoid_easy evaluate=True benchmark.config.instance_set_path=../instance_sets/sigmoid/sigmoid_2D3M_test.csv
+```
+
 
 ## Installation
 ```bash

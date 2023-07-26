@@ -18,7 +18,8 @@ from dacbench.abstract_agent import AbstractDACBenchAgent
 
 
 def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger]:
-    experiment_name = "train" if not cfg.evaluate else "eval"
+    ipath = Path(cfg.benchmark.config.instance_set_path)
+    experiment_name = "train" if not cfg.evaluate else f"eval/{ipath.stem}"
     logger = Logger(
         experiment_name=experiment_name,
         output_path=Path("logs"),
@@ -60,7 +61,7 @@ def main(cfg: DictConfig) -> None:
 
     env, logger = wrap_and_log(cfg, env)
 
-    if not cfg.evauate:
+    if not cfg.evaluate:
         run_benchmark(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
         evaluate(env, agent, cfg.num_eval_episodess)
