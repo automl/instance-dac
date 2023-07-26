@@ -39,7 +39,8 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
 
 
 def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, num_eval_episodes: int = 10):
-    for i in range(num_eval_episodes):
+    n_instances = len(env.instance_set)
+    for i in range(num_eval_episodes * n_instances):
         env.reset()
         terminated, truncated = False, False
         total_reward = 0
@@ -64,8 +65,9 @@ def main(cfg: DictConfig) -> None:
     if not cfg.evaluate:
         run_benchmark(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
-        agent = load_agent(cfg)
-        evaluate(env, agent, cfg.num_eval_episodess)
+        # agent = load_agent(cfg)
+        agent = RandomAgent(env=env)
+        evaluate(env, agent, cfg.num_eval_episodes)
 
 
 if __name__ == "__main__":
