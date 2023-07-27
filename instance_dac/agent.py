@@ -88,7 +88,7 @@ class PPO(AbstractDACBenchAgent):
         return self.pi_targ(state, return_false=True)
 
     def save(self, path: Path):
-        save_path = path / f"agent_{len(self.tracer._deque_r)}.pkl.lz4"
+        save_path = path / f"agent.pkl.lz4"
         coax.utils.dump(self.__dict__, save_path)      
     
     def load(self, path: Path):
