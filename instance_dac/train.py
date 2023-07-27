@@ -109,6 +109,9 @@ def train(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = None,
         if logger is not None:
             logger.next_episode()
 
+    if logger is not None:
+        agent.save(Path(logger.output_path).parent)
+
     env.close()
 
 
