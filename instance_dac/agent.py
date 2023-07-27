@@ -83,13 +83,12 @@ class PPO(AbstractDACBenchAgent):
         self.ppo_clip = coax.policy_objectives.PPOClip(self.pi, regularizer=self.policy_reg, optimizer=optax.adam(1e-4))
         
 
-    def act(self, state, reward):
-        
-        return self.pi_targ(state, return_false=True)
+    def act(self, state, reward):        
+        return self.pi_targ(state, return_logp=False)
 
     def save(self, path: Path):
         save_path = path / f"agent.pkl.lz4"
         coax.utils.dump(self.__dict__, save_path)      
     
     def load(self, path: Path):
-        self.__dict__ = coax.utils.load(path)
+        self.__dict__ = coax.utils.load(path / f"agent.pkl.lz4")

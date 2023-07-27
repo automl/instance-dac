@@ -52,14 +52,15 @@ def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = No
     
     n_instances = len(env.instance_set)
     for i in tqdm.tqdm(range(num_eval_episodes * n_instances)):
-        env.reset()
+        observation, info = env.reset()
         terminated, truncated = False, False
         total_reward = 0
+        reward = None
         while not (terminated or truncated):
-            observation, reward, terminated, truncated, info = env.last()
+            # observation, reward, terminated, truncated, info = env.last()
             action = agent.act(state=observation, reward=reward)
-            env.step(action)
-            observation, reward, terminated, truncated, info = env.last()
+            observation, reward, terminated, truncated, info = env.step(action)
+            # observation, reward, terminated, truncated, info = env.last()
             total_reward += reward
             if logger is not None:
                 logger.next_step()
@@ -133,9 +134,8 @@ def main(cfg: DictConfig) -> None:
     if not cfg.evaluate:
         train(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
-        # agent = load_agent(cfg)
         env.use_test_set()
-        agent = RandomAgent(env=env)
+        agent.load(Path(logger.output_path).parent)
         evaluate(env, agent, logger, cfg.num_eval_episodes)
 
 
