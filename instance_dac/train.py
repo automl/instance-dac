@@ -128,7 +128,7 @@ def main(cfg: DictConfig) -> None:
     # print(env.action_space)
     # pdb.set_trace()
 
-    agent = PPO(env)
+    agent = PPO(env, seed=cfg.seed)
 
     if not cfg.evaluate:
         train(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)

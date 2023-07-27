@@ -58,13 +58,13 @@ class PPO(AbstractDACBenchAgent):
     """
         PPO agent for sigmoid
     """
-    def __init__(self, env):
+    def __init__(self, env, seed):
         
         pi_f = pi_func(env)
         v_f  = v_func(env) 
         
-        self.pi = coax.Policy(pi_f, env)
-        self.v = coax.V(v_f, env)
+        self.pi = coax.Policy(pi_f, env, random_seed=seed)
+        self.v = coax.V(v_f, env, random_seed=seed)
 
         # target network
         self.pi_targ = self.pi.copy()
