@@ -10,7 +10,7 @@ import optax
 
 from jax.tree_util import tree_map, tree_structure
 
-import pdb
+from pathlib import Path
 
 # Policy definitions
 def pi_func(env):
@@ -86,3 +86,10 @@ class PPO(AbstractDACBenchAgent):
     def act(self, state, reward):
         
         return self.pi_targ(state, return_false=True)
+
+    def save(self, path: Path):
+        save_path = path / f"agent_{len(self.tracer._deque_r)}.pkl.lz4"
+        coax.utils.dump(self.__dict__, save_path)      
+    
+    def load(self, path: Path):
+        self.__dict__ = coax.utils.load(path)
