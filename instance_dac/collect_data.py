@@ -5,6 +5,8 @@ import pandas as pd
 from dacbench.logger import Logger, log2dataframe, load_logs
 import matplotlib.pyplot as plt
 from dacbench.plotting import plot_performance, plot_performance_per_instance, plot_state
+from multiprocessing import Pool
+import os
 
 
 cfg_fn = ".hydra/config.yaml"
@@ -12,34 +14,56 @@ perf_fn = "PerformanceTrackingWrapper.jsonl"
 state_fn = "StateTrackingWrapper.jsonl"
 
 
+def get_eval_df(eval_dir: Path) -> pd.DataFrame:
+    # Get config
+    cfg_filename = eval_dir / "../../.." / cfg_fn
+
+    cfg = OmegaConf.load(cfg_filename)
+
+    # Recover the correct test set path bc it gets overwritten
+    cfg.benchmark.config.test_set_path = str(Path(cfg.benchmark.config.test_set_path).parent / (str(eval_dir.stem) + ".csv"))
+
+    cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
+
+    cfg_dict_flat = pd.json_normalize(data=cfg_dict, sep=".")
+
+    cfg_small = {
+        "benchmark_id": cfg.benchmark_id,
+        "instance_set_id": cfg.instance_set_id,
+        "test_set_id": Path(cfg.benchmark.config.test_set_path).name
+    }
+
+    # Read performance data
+    logs = load_logs(eval_dir / perf_fn)
+    perf_df = log2dataframe(logs, wide=True)
+
+    # Read state data
+    logs = load_logs(eval_dir / state_fn)
+    state_df = log2dataframe(logs, wide=True)
+
+    index_columns = ["episode", "step", "seed", "instance"]
+
+    df = perf_df.merge(state_df)
+
+    for k, v in cfg_small.items():
+        df[k] = v
+
+    return df
+
+
+
+
 if __name__ == "__main__":
     path = Path("runs/Sigmoid")
     eval_dirs = list(path.glob("**/eval/*"))
     eval_dirs.sort()
     printr(eval_dirs)
+    common_path = os.path.commonpath(eval_dirs)
+    df_fn = Path("data") / common_path / "eval.csv"
+    df_fn.parent.mkdir(parents=True, exist_ok=True)
 
-    for eval_dir in eval_dirs:
-        # Get config
-        cfg_filename = eval_dir / "../../.." / cfg_fn
+    with Pool() as pool:
+        dfs = pool.map(get_eval_df, eval_dirs)
 
-        cfg = OmegaConf.load(cfg_filename)
-
-        # Recover the correct test set path bc it gets overwritten
-        cfg.benchmark.config.test_set_path = str(Path(cfg.benchmark.config.test_set_path).parent / (str(eval_dir.stem) + ".csv"))
-
-        cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
-
-        cfg_dict_flat = pd.json_normalize(data=cfg_dict, sep=".")
-
-        # Read performance data
-        logs = load_logs(eval_dir / perf_fn)
-        perf_df = log2dataframe(logs, wide=True)
-
-        # Read state data
-        logs = load_logs(eval_dir / state_fn)
-        state_df = log2dataframe(logs, wide=True)
-        printr(state_df)
-        printr(cfg_dict_flat)
-
-
-        break
+    df = pd.concat(dfs).reset_index(drop=True)
+    df.to_csv(df_fn, index=False)
