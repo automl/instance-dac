@@ -1,0 +1,6 @@
+# @package _global_
+benchmark: 
+  _target_: dacbench.benchmarks.SigmoidBenchmark
+
+benchmark_id: Sigmoid
+num_episodes: 1000
