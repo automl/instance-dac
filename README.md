@@ -34,10 +34,8 @@ git checkout instance_dac
 pip install -e .
 ```
 
-Documentation at https://automl.github.io/Instance-DAC/main
 
-## Minimal Example
-
-```
-# Your code here
-```
+## Data
+With the script `instance_dac/collect_data.py` you can gather all the log files and create a csv file.
+The table will be saved under `data/runs/<env_name>/<training_set>` and can contain performance data
+on different test sets.
