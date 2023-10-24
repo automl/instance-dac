@@ -13,10 +13,11 @@ from dacbench.logger import Logger, log2dataframe, load_logs
 from dacbench.agents.simple_agents import RandomAgent
 from dacbench.benchmarks import SigmoidBenchmark
 from dacbench.runner import run_benchmark
-from dacbench.wrappers import PerformanceTrackingWrapper, StateTrackingWrapper,  ObservationWrapper
+from dacbench.wrappers import PerformanceTrackingWrapper, StateTrackingWrapper,  ObservationWrapper, ActionFrequencyWrapper
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
 from instance_dac.agent import PPO
+from instance_dac.wrapper import RewardTrackingWrapper
 
 import coax
 
@@ -32,9 +33,13 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
     )
     state_logger = logger.add_module(StateTrackingWrapper)
     performance_logger = logger.add_module(PerformanceTrackingWrapper)
+    action_logger = logger.add_module(ActionFrequencyWrapper)
+    reward_logger = logger.add_module(RewardTrackingWrapper)
 
     env = PerformanceTrackingWrapper(env, logger=performance_logger)
     env = StateTrackingWrapper(env, logger=state_logger)
+    env = ActionFrequencyWrapper(env, logger=action_logger)
+    env = RewardTrackingWrapper(env, logger=reward_logger)
     env = coax.wrappers.TrainMonitor(env, name=experiment_name)
 
     # Add env to logger
