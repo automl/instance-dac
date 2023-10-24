@@ -66,7 +66,7 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    path = Path("runs2/Sigmoid")
+    path = Path("runs/Sigmoid")
     eval_dirs = list(path.glob("**/eval/*"))
     eval_dirs.sort()
     printr(eval_dirs)
