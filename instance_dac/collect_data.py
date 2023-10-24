@@ -12,6 +12,8 @@ import os
 cfg_fn = ".hydra/config.yaml"
 perf_fn = "PerformanceTrackingWrapper.jsonl"
 state_fn = "StateTrackingWrapper.jsonl"
+reward_fn = "RewardTrackingWrapper.jsonl"
+action_fn = "ActionFrequencyWrapper.jsonl"
 
 
 def get_eval_df(eval_dir: Path) -> pd.DataFrame:
@@ -41,9 +43,19 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     logs = load_logs(eval_dir / state_fn)
     state_df = log2dataframe(logs, wide=True)
 
+    # Read reward data
+    logs = load_logs(eval_dir / reward_fn)
+    reward_df = log2dataframe(logs, wide=True)
+
+    # Read action data
+    logs = load_logs(eval_dir / action_fn)
+    action_df = log2dataframe(logs, wide=True)
+
     index_columns = ["episode", "step", "seed", "instance"]
 
-    df = perf_df.merge(state_df)
+    # df = perf_df.merge(state_df)
+    df = state_df.merge(reward_df)
+    df = df.merge(action_df)
 
     for k, v in cfg_small.items():
         df[k] = v
@@ -54,7 +66,7 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    path = Path("runs/Sigmoid")
+    path = Path("runs2/Sigmoid")
     eval_dirs = list(path.glob("**/eval/*"))
     eval_dirs.sort()
     printr(eval_dirs)
