@@ -12,6 +12,12 @@ Needs to have the same config as the train command.
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_test.csv
 ```
 
+## Experiments
+```bash
+# 1. Train on 2D3M_train for 10 seeds
+python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,10)' -m
+```
+
 
 ## Installation
 ```bash
