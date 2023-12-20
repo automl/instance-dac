@@ -1,0 +1,13 @@
+# @package _global_
+defaults:
+  - override /hydra/launcher: submitit_slurm
+
+hydra:
+  launcher:
+    partition: normal
+    cpus_per_task: 1
+    name: instdac
+    timeout_min: 1440
+    mem_gb: 64
+    # setup:
+    #   - micromamba activate /scratch/hpc-prf-intexml/cbenjamins/envs/instancedac
