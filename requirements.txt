@@ -8,3 +8,5 @@ jax
 coax
 dm-haiku
 optax
+imageio
+hydra-submitit-launcher
