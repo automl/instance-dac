@@ -4,7 +4,10 @@ import tqdm
 import hydra
 from omegaconf import DictConfig, OmegaConf
 from rich import print as printr
+from rich import inspect
 from instance_dac.make import make_benchmark
+import gymnasium
+from gymnasium.wrappers import FlattenObservation, NormalizeObservation
 
 from pathlib import Path
 
@@ -29,7 +32,7 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
         experiment_name=experiment_name,
         output_path=Path("logs"),
         step_write_frequency=None,
-        episode_write_frequency=None,
+        episode_write_frequency=1,
     )
     state_logger = logger.add_module(StateTrackingWrapper)
     performance_logger = logger.add_module(PerformanceTrackingWrapper)
@@ -46,6 +49,14 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
     logger.set_env(env)
 
     assert logger.env is not None
+
+    # Must be flattened here because doing this before the logging 
+    # setup somehow converts the obs space back to Dict
+    if isinstance(env.observation_space, gymnasium.spaces.Dict):
+        env = FlattenObservation(env=env)
+
+    if isinstance(env.observation_space, gymnasium.spaces.Box):
+        env = NormalizeObservation(env=env)
 
     return env, logger
 
@@ -129,10 +140,6 @@ def main(cfg: DictConfig) -> None:
     env = benchmark.get_environment()
 
     env, logger = wrap_and_log(cfg, env)
-
-    # import pdb 
-    # print(env.action_space)
-    # pdb.set_trace()
 
     agent = PPO(env, seed=cfg.seed)
 
