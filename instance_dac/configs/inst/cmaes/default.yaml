@@ -1,0 +1,8 @@
+# @package _global_
+
+benchmark:  
+  config:
+    instance_set_path: ../instance_sets/cma/cma_train.csv
+    test_set_path: ../instance_sets/cma/cma_test.csv
+
+instance_set_id: default

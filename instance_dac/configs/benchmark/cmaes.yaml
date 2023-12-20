@@ -1,0 +1,6 @@
+# @package _global_
+benchmark: 
+  _target_: dacbench.benchmarks.CMAESBenchmark
+
+benchmark_id: CMA-ES
+num_episodes: 1000

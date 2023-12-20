@@ -3,6 +3,7 @@
 Runcommand
 ```bash
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default
 ```
 
 Evaluate:
@@ -14,6 +15,9 @@ python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluat
 
 ## Experiments
 ```bash
+#####################################################
+# SIGMOID
+#####################################################
 # 1. Train on 2D3M_train for 10 seeds
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,10)' -m
 
@@ -22,6 +26,13 @@ python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluat
 
 # Evaluate on test set 1
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_test.csv 'seed=range(1,10)' -m
+
+
+#####################################################
+# CMA-ES
+#####################################################
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,21)' +cluster=noctua -m
+
 ```
 
 
