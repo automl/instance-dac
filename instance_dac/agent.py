@@ -13,33 +13,26 @@ from jax.tree_util import tree_map, tree_structure
 from pathlib import Path
 
 # Policy definitions
-def pi_func(env):
+
+def make_func_pi(env):
     def func_pi(S, is_training):
         shared = hk.Sequential((
-            hk.Linear(8), 
-            jax.nn.relu,
-            hk.Linear(8), 
-            jax.nn.relu,
+            hk.Linear(8), jax.nn.relu,
+            hk.Linear(8), jax.nn.relu,
         ))
         mu = hk.Sequential((
             shared,
-            hk.Linear(8), 
-            jax.nn.relu,
-            hk.Linear(prod(4,), w_init=jnp.zeros),
-            hk.Reshape((4,)),
+            hk.Linear(8), jax.nn.relu,
+            hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
+            hk.Reshape(env.action_space.shape),
         ))
         logvar = hk.Sequential((
             shared,
             hk.Linear(8), jax.nn.relu,
-            hk.Linear(prod(9,), w_init=jnp.zeros),
-            hk.Reshape((9,)),
+            hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
+            hk.Reshape(env.action_space.shape),
         ))
-        
-        mu_s = mu(S)
-        logvar_s = logvar(S)
-        
-        return ({'logits': mu_s}, {'logits': logvar_s} )
-
+        return {'mu': mu(S), 'logvar': logvar(S)}
     return func_pi
 
 # Value Function definition
@@ -60,10 +53,10 @@ class PPO(AbstractDACBenchAgent):
     """
     def __init__(self, env, seed):
         
-        pi_f = pi_func(env)
+        pi_f = make_func_pi(env)
         v_f  = v_func(env) 
         
-        self.pi = coax.Policy(pi_f, env, random_seed=seed)
+        self.pi = coax.Policy(pi_f, env, random_seed=seed, proba_dist=coax.proba_dists.ProbaDist(env.action_space))
         self.v = coax.V(v_f, env, random_seed=seed)
 
         # target network
