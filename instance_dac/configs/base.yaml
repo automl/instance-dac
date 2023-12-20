@@ -2,7 +2,6 @@ defaults:
   - _self_
   - override hydra/job_logging: colorlog
   - override hydra/hydra_logging: colorlog
-  - override hydra/launcher: joblib
 
 
 
@@ -24,9 +23,7 @@ num_eval_episodes: 10  # per instance
 outdir: runs/${benchmark_id}
 hydra:
   run:
-    dir: ${outdir}/${instance_set_id}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: runstest/${benchmark_id}/${instance_set_id}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
   sweep:
     dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${instance_set_id}/${seed}
-  launcher:
-    n_jobs: 4
