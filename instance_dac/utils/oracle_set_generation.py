@@ -47,7 +47,7 @@ instance_set_id: {instance_set_id}
             config_path.parent.mkdir(exist_ok=True, parents=True)
             config_path.write_text(config_text)
 
-    override = f"'+inst/{benchmark_id_}/oracle_{instance_set_id}/glob(*)'"
+    override = f"'+inst/{benchmark_id_}/oracle_{instance_set_id}=glob(*)'"
 
     return override
 
