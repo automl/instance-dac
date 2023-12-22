@@ -13,6 +13,12 @@ Needs to have the same config as the train command.
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_test.csv
 ```
 
+
+Sync data
+```bash
+rsync -azv --delete -e 'ssh -J intexml2@fe.noctua2.pc2.uni-paderborn.de' intexml2@n2login5:/scratch/hpc-prf-intexml/cbenjamins/repos/instance-dac/runs .
+```
+
 ## Experiments
 ```bash
 #####################################################
