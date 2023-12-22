@@ -32,6 +32,7 @@ def make_func_pi(env):
             hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
             hk.Reshape(env.action_space.shape),
         ))
+        # TODO automatic design for cont/discrete actions
         return {'mu': mu(S), 'logvar': logvar(S)}
     return func_pi
 
