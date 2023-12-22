@@ -12,14 +12,20 @@ import seaborn as sb
 import pandas as pd
 import multiprocessing
 from multiprocessing import Pool
+from functools import partial
 
 from dacbench.logger import load_logs, log2dataframe
-from dacbench.plotting import plot_performance_per_instance, plot_performance
+from dacbench.plotting import plot_performance_per_instance, plot_performance, plot
 
 import matplotlib.pyplot as plt
+import matplotlib
+
 
 sb.set_style("whitegrid")
 sb.set_palette("colorblind")
+
+matplotlib.rcParams['pdf.fonttype'] = 42
+matplotlib.rcParams['ps.fonttype'] = 42
 
 
 def map_multiprocessing(
@@ -40,15 +46,20 @@ def map_multiprocessing(
     return results
 
 
-def _load_single_performance_data(filename: str) -> pd.DataFrame:
+def _load_single_performance_data(filename: str, drop_time: bool = True) -> pd.DataFrame:
     logs = load_logs(filename)
-    data = log2dataframe(logs, wide=True, drop_columns=["time"])
+    if drop_time:
+        drop_columns = ["time"]
+    else:
+        drop_columns = None
+    data = log2dataframe(logs, wide=True, drop_columns=drop_columns)
     return data
 
-def load_performance_data(path: str | Path, id: str = "PerformanceTrackingWrapper.jsonl") -> pd.DataFrame:
+def load_performance_data(path: str | Path, id: str = "PerformanceTrackingWrapper.jsonl", **kwargs) -> pd.DataFrame:
     path = Path(path)
     filenames = list(path.glob(f"**/{id}"))
-    dfs = map_multiprocessing(_load_single_performance_data, filenames)
+    func = partial(_load_single_performance_data, **kwargs)
+    dfs = map_multiprocessing(func, filenames)
     data = pd.concat(dfs).reset_index(drop=True)
     return data
 
@@ -103,9 +114,38 @@ def performance_example(path: str | Path):
         grid.savefig(f"{outdir}/overall_performance_per_seed.pdf")
         plt.show()
 
+def performance_example_over_time(path: str | Path):
+    """
+    Plot benchmark's performance over time, divided by seed and with each seed in its own plot
+    """
+    path = Path(path)
+    benchmark_name = path.parts[2] 
+    instance_set_id = path.parts[3]
+    outdir = Path("figures") / benchmark_name / instance_set_id
+    outdir.mkdir(exist_ok=True, parents=True)
+
+    data = load_performance_data(path, drop_time=False)
+    print(data)
+    print(data.columns)
+
+    # overall
+    title = "Overall Performance"
+    settings = {
+        "data": data,
+        "x": "time",
+        "y": "overall_performance",
+        "kind": "line",
+    }
+    x_label = y_label = None
+    kwargs = {}
+    grid = plot(sb.relplot, settings, title, x_label, y_label, **kwargs)
+    grid.savefig(f"{outdir}/overall_performance_over_time.pdf")
+    plt.show()
+
 
 if __name__ == "__main__":
     path = "../runs/CMA-ES/default"
     
+    # performance_example_over_time(path=path)
     per_instance_example(path=path)
     performance_example(path=path)
