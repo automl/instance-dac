@@ -69,6 +69,7 @@ def main():
         # Remove inst set and add new override
         unknown_args = [o for o in unknown_args if "inst" not in o]
         unknown_args.append(override)
+        unknown_args.append("'instance_set_selection=oracle'")
 
     if add_multirun_flag:
         unknown_args += ["-m"]
