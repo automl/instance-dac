@@ -131,3 +131,6 @@ dmypy.json
 runs
 runs*
 figures
+data
+instance_dac/configs/inst/**/oracle*
+instance_dac/instance_sets/**/oracle
