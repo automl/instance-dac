@@ -14,6 +14,7 @@ benchmark:
 benchmark_id: ???  # set in benchmark/...
 instance_set_id: ???  # set in benchmark/...
 num_episodes: ???  # set in benchmark/...
+instance_set_selection: full
 
 evaluate: False
 num_eval_episodes: 10  # per instance
@@ -23,7 +24,7 @@ num_eval_episodes: 10  # per instance
 outdir: runs/${benchmark_id}
 hydra:
   run:
-    dir: runstest/${benchmark_id}/${instance_set_id}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: runstest/${benchmark_id}/${instance_set_id}/${instance_set_selection}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
   sweep:
     dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
-    subdir: ${instance_set_id}/${seed}
+    subdir: ${instance_set_id}/${instance_set_selection}/${seed}
