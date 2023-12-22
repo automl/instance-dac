@@ -6,7 +6,7 @@ from pathlib import Path
 import ast
 
 
-def generate_oracle_set(instance_set_path: str, instance_set_id: str, benchmark_id: str) -> str:
+def generate_oracle_set(instance_set_path: str, instance_set_id: str, benchmark_id: str) -> tuple[str, int]:
     template = \
 """
 # @package _global_
@@ -34,8 +34,10 @@ instance_set_id: {instance_set_id}
 
     text = instance_set_path.read_text()
     lines = text.split("\n")
+    n_instances = 0
     for line in lines:
         if line:
+            n_instances += 1
             instance_id = ast.literal_eval(line)[0]
             instance_set_path_train = target_instance_set_dir / f"instance_{instance_id}.csv"
             instance_set_path_train.parent.mkdir(exist_ok=True, parents=True)
@@ -49,7 +51,7 @@ instance_set_id: {instance_set_id}
 
     override = f"'+inst/{benchmark_id_}/oracle_{instance_set_id}=glob(*)'"
 
-    return override
+    return override, n_instances
 
 if __name__ == "__main__":
     instance_set_path = "../instance_sets/sigmoid/sigmoid_2D3M_train.csv"
