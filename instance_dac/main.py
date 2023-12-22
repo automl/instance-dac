@@ -22,7 +22,11 @@ from dacbench.abstract_agent import AbstractDACBenchAgent
 from instance_dac.agent import PPO
 from instance_dac.wrapper import RewardTrackingWrapper
 
+from instance_dac.utils.oracle_set_generation import generate_oracle_set
+
 import coax
+from hydra import compose, initialize
+from omegaconf import OmegaConf
 
 
 # @hydra.main(config_path="configs", config_name="base.yaml")
@@ -33,6 +37,7 @@ import coax
 import argparse
 import os
 from subprocess import Popen
+from rich import print as printr
 
 def main():
     parser = argparse.ArgumentParser()
@@ -42,9 +47,28 @@ def main():
     # unknown_args = [f"'{a}'" for a in unknown_args]
 
     add_multirun_flag = False
-    if unknown_args[-1] == "-m":
-        unknown_args.pop(-1)
-        add_multirun_flag = True
+    if unknown_args:
+        if unknown_args[-1] == "-m":
+            unknown_args.pop(-1)
+            add_multirun_flag = True
+
+    if args.oracle:
+        with initialize(version_base=None, config_path="configs"):
+            _overrides = [o for o in unknown_args if ("benchmark" in o or "inst" in o)]
+            cfg = compose(config_name="base", overrides=_overrides)
+            printr("-"*50)
+            printr("Source Config")
+            printr(cfg)
+            printr("-"*50)
+        
+        override = generate_oracle_set(
+            instance_set_path=cfg.benchmark.config.instance_set_path,
+            instance_set_id=cfg.instance_set_id,
+            benchmark_id=cfg.benchmark_id,
+        )
+        # Remove inst set and add new override
+        unknown_args = [o for o in unknown_args if "inst" not in o]
+        unknown_args.append(override)
 
     if add_multirun_flag:
         unknown_args += ["-m"]
@@ -54,8 +78,8 @@ def main():
         "instance_dac/train.py",
     ] + unknown_args
 
-    print(cmd)
-    print(" ".join(cmd))
+    printr(cmd)
+    printr(" ".join(cmd))
 
     if not args.dry:
         env = os.environ.copy()
