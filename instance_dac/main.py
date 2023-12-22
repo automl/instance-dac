@@ -37,7 +37,14 @@ from omegaconf import OmegaConf
 import argparse
 import os
 from subprocess import Popen
+import subprocess
 from rich import print as printr
+import logging
+from rich.logging import RichHandler
+
+FORMAT = "%(message)s"
+logging.basicConfig(level=logging.INFO, format=FORMAT, datefmt="[%X]", handlers=[RichHandler()])
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -46,11 +53,21 @@ def main():
     args, unknown_args = parser.parse_known_args()  # unknown args are hydra commands
     # unknown_args = [f"'{a}'" for a in unknown_args]
 
+    # log = logging.getLogger("Dispatch")
+    
     add_multirun_flag = False
     if unknown_args:
         if unknown_args[-1] == "-m":
             unknown_args.pop(-1)
             add_multirun_flag = True
+
+        unknown_args = [
+            f"'{a}'" if "range" in a else a for a in unknown_args  
+        ]
+    printr("-"*50)
+    printr("Hydra Overrides")
+    printr(unknown_args)
+
 
     if args.oracle:
         with initialize(version_base=None, config_path="configs"):
@@ -61,7 +78,7 @@ def main():
             printr(cfg)
             printr("-"*50)
         
-        override = generate_oracle_set(
+        override, n_instances = generate_oracle_set(
             instance_set_path=cfg.benchmark.config.instance_set_path,
             instance_set_id=cfg.instance_set_id,
             benchmark_id=cfg.benchmark_id,
@@ -71,6 +88,9 @@ def main():
         unknown_args.append(override)
         unknown_args.append("'instance_set_selection=oracle'")
 
+        printr(f"Found {n_instances} instances.")
+        printr("-"*50)
+
     if add_multirun_flag:
         unknown_args += ["-m"]
 
@@ -79,12 +99,14 @@ def main():
         "instance_dac/train.py",
     ] + unknown_args
 
-    printr(cmd)
+    printr("Command")
     printr(" ".join(cmd))
+    printr("-"*50)
 
     if not args.dry:
         env = os.environ.copy()
-        p = Popen(cmd, env=env)
+        env["OMP_NUM_THREADS"] = "1"
+        p = Popen(" ".join(cmd), env=env, shell=True)
         p.communicate()
 
 if __name__ == "__main__":
