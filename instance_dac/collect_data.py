@@ -63,10 +63,8 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     return df
 
 
-
-
-if __name__ == "__main__":
-    path = Path("runs/Sigmoid")
+def load_traineval_trajectories(path: str) -> pd.DataFrame:
+    path = Path(path)
     eval_dirs = list(path.glob("**/eval/*"))
     eval_dirs.sort()
     printr(eval_dirs)
@@ -79,3 +77,13 @@ if __name__ == "__main__":
 
     df = pd.concat(dfs).reset_index(drop=True)
     df.to_csv(df_fn, index=False)
+    return df
+
+
+
+
+
+if __name__ == "__main__":
+    path = Path("runs/Sigmoid")
+    df = load_traineval_trajectories(path=path)
+    
