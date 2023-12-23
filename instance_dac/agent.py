@@ -7,6 +7,7 @@ import coax
 import haiku as hk
 from numpy import prod
 import optax
+from gymnasium.spaces import Box, Discrete, MultiDiscrete
 
 from jax.tree_util import tree_map, tree_structure
 
@@ -20,20 +21,43 @@ def make_func_pi(env):
             hk.Linear(8), jax.nn.relu,
             hk.Linear(8), jax.nn.relu,
         ))
-        mu = hk.Sequential((
-            shared,
-            hk.Linear(8), jax.nn.relu,
-            hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
-            hk.Reshape(env.action_space.shape),
-        ))
-        logvar = hk.Sequential((
-            shared,
-            hk.Linear(8), jax.nn.relu,
-            hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
-            hk.Reshape(env.action_space.shape),
-        ))
-        # TODO automatic design for cont/discrete actions
-        return {'mu': mu(S), 'logvar': logvar(S)}
+
+        if isinstance(env.action_space, Discrete):
+            logits = hk.Sequential((
+                shared,
+                hk.Linear(8), jax.nn.relu,
+                hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
+                hk.Reshape(env.action_space.shape),
+            ))
+            return {'logits': logits}
+        elif isinstance(env.action_space, MultiDiscrete):
+            output = []
+            for n in env.action_space.nvec:
+                logits = hk.Sequential((
+                    shared,
+                    hk.Linear(8), jax.nn.relu,
+                    hk.Linear(prod(n), w_init=jnp.zeros),
+                    hk.Reshape((n,)),
+                ))
+                output.append({'logits': logits(S)})
+            return tuple(output)
+        elif isinstance(env.action_space, Box):
+            mu = hk.Sequential((
+                shared,
+                hk.Linear(8), jax.nn.relu,
+                hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
+                hk.Reshape(env.action_space.shape),
+            ))
+            logvar = hk.Sequential((
+                shared,
+                hk.Linear(8), jax.nn.relu,
+                hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
+                hk.Reshape(env.action_space.shape),
+            ))
+            # TODO automatic design for cont/discrete actions
+            return {'mu': mu(S), 'logvar': logvar(S)}
+        else:
+            raise ValueError(f"Action space {type(env.action_space)} is not supported.")
     return func_pi
 
 # Value Function definition
