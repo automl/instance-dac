@@ -24,7 +24,7 @@ num_eval_episodes: 10  # per instance
 outdir: runs/${benchmark_id}
 hydra:
   run:
-    dir: runstest/${benchmark_id}/${instance_set_id}/${instance_set_selection}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: runs/${benchmark_id}/${instance_set_id}/${instance_set_selection}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
   sweep:
     dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
     subdir: ${instance_set_id}/${instance_set_selection}/${seed}
