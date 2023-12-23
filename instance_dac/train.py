@@ -40,9 +40,11 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
     reward_logger = logger.add_module(RewardTrackingWrapper)
 
     env = PerformanceTrackingWrapper(env, logger=performance_logger)
-    env = StateTrackingWrapper(env, logger=state_logger)
-    env = ActionFrequencyWrapper(env, logger=action_logger)
-    env = RewardTrackingWrapper(env, logger=reward_logger)
+    # Reduce log sizes
+    if cfg.evaluate:
+        env = StateTrackingWrapper(env, logger=state_logger)
+        env = ActionFrequencyWrapper(env, logger=action_logger)
+        env = RewardTrackingWrapper(env, logger=reward_logger)
     env = coax.wrappers.TrainMonitor(env, name=experiment_name)
 
     # Add env to logger
