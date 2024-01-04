@@ -12,9 +12,9 @@ def generate_oracle_set(instance_set_path: str, instance_set_id: str, benchmark_
 # @package _global_
 
 benchmark:  
-config:
-    instance_set_path: {instance_set_path_train}
-    test_set_path: ../instance_sets/sigmoid/sigmoid_2D3M_test.csv
+    config:
+        instance_set_path: {instance_set_path_train}
+        test_set_path: ../instance_sets/sigmoid/sigmoid_2D3M_test.csv
 
 instance_set_id: {instance_set_id}
 """
@@ -29,7 +29,7 @@ instance_set_id: {instance_set_id}
 
     benchmark_id_ = benchmark_id_map[benchmark_id]
     target_instance_set_config_dir = Path("instance_dac/configs/inst") / benchmark_id_ / f"oracle_{instance_set_id}"
-    target_instance_set_dir = Path("instance_dac/instance_sets") / benchmark_id_ / instance_set_id / "oracle"
+    target_instance_set_dir = Path("../../../instance_dac/instance_sets") / benchmark_id_ / instance_set_id / "oracle"
 
 
     text = instance_set_path.read_text()
