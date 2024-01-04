@@ -20,6 +20,8 @@ evaluate: False
 eval_on_train_set: False
 num_eval_episodes: 10  # per instance
 
+log_only_performance: False  # TODO Check if we need all logs: Relevant for evaluating oracle? 
+
 
 
 outdir: runs/${benchmark_id}
