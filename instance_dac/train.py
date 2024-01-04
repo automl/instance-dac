@@ -16,7 +16,12 @@ from dacbench.logger import Logger, log2dataframe, load_logs
 from dacbench.agents.simple_agents import RandomAgent
 from dacbench.benchmarks import SigmoidBenchmark
 from dacbench.runner import run_benchmark
-from dacbench.wrappers import PerformanceTrackingWrapper, StateTrackingWrapper,  ObservationWrapper, ActionFrequencyWrapper
+from dacbench.wrappers import (
+    PerformanceTrackingWrapper,
+    StateTrackingWrapper,
+    ObservationWrapper,
+    ActionFrequencyWrapper,
+)
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
 from instance_dac.agent import PPO
@@ -55,7 +60,7 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
 
     assert logger.env is not None
 
-    # Must be flattened here because doing this before the logging 
+    # Must be flattened here because doing this before the logging
     # setup somehow converts the obs space back to Dict
     if isinstance(env.observation_space, gymnasium.spaces.Dict):
         env = FlattenObservation(env=env)
@@ -70,7 +75,7 @@ def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = No
     if logger is not None:
         logger.reset_episode()
         logger.set_env(env)
-    
+
     n_instances = len(env.instance_set)
     for i in tqdm.tqdm(range(num_eval_episodes * n_instances)):
         observation, info = env.reset()
@@ -127,7 +132,7 @@ def train(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = None,
                 break
 
             s = s_next
-            
+
         if logger is not None:
             logger.next_episode()
 

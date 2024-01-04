@@ -23,7 +23,9 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     cfg = OmegaConf.load(cfg_filename)
 
     # Recover the correct test set path bc it gets overwritten
-    cfg.benchmark.config.test_set_path = str(Path(cfg.benchmark.config.test_set_path).parent / (str(eval_dir.stem) + ".csv"))
+    cfg.benchmark.config.test_set_path = str(
+        Path(cfg.benchmark.config.test_set_path).parent / (str(eval_dir.stem) + ".csv")
+    )
 
     cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
 
@@ -32,7 +34,7 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     cfg_small = {
         "benchmark_id": cfg.benchmark_id,
         "instance_set_id": cfg.instance_set_id,
-        "test_set_id": Path(cfg.benchmark.config.test_set_path).name
+        "test_set_id": Path(cfg.benchmark.config.test_set_path).name,
     }
 
     # Read performance data
@@ -80,10 +82,6 @@ def load_traineval_trajectories(path: str) -> pd.DataFrame:
     return df
 
 
-
-
-
 if __name__ == "__main__":
     path = Path("runs/Sigmoid")
     df = load_traineval_trajectories(path=path)
-    

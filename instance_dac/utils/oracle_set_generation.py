@@ -7,8 +7,7 @@ import ast
 
 
 def generate_oracle_set(instance_set_path: str, instance_set_id: str, benchmark_id: str) -> tuple[str, int]:
-    template = \
-"""
+    template = """
 # @package _global_
 
 benchmark:  
@@ -32,14 +31,11 @@ hydra:
 
     instance_set_path = Path("DACBench/dacbench/instance_sets") / instance_set_path
 
-    benchmark_id_map = {
-        "Sigmoid": "sigmoid"
-    }
+    benchmark_id_map = {"Sigmoid": "sigmoid"}
 
     benchmark_id_ = benchmark_id_map[benchmark_id]
     target_instance_set_config_dir = Path("instance_dac/configs/inst") / benchmark_id_ / f"oracle_{instance_set_id}"
     target_instance_set_dir = Path("../../../instance_dac/instance_sets") / benchmark_id_ / instance_set_id / "oracle"
-
 
     text = instance_set_path.read_text()
     lines = text.split("\n")
@@ -53,7 +49,12 @@ hydra:
             instance_set_path_train.write_text(line + "\n")
 
             oracle_instance_set_id = f"{instance_set_id}_oracle_{instance_id}"
-            config_text = template.format(instance_set_id=instance_set_id, instance_set_path_train=instance_set_path_train, oracle_instance_set_id=oracle_instance_set_id, instance_id=str(instance_id))
+            config_text = template.format(
+                instance_set_id=instance_set_id,
+                instance_set_path_train=instance_set_path_train,
+                oracle_instance_set_id=oracle_instance_set_id,
+                instance_id=str(instance_id),
+            )
             config_path = target_instance_set_config_dir / f"instance_{instance_id}.yaml"
             config_path.parent.mkdir(exist_ok=True, parents=True)
             config_path.write_text(config_text)
@@ -61,6 +62,7 @@ hydra:
     override = f"'+inst/{benchmark_id_}/oracle_{instance_set_id}=glob(*)'"
 
     return override, n_instances
+
 
 if __name__ == "__main__":
     instance_set_path = "../instance_sets/sigmoid/sigmoid_2D3M_train.csv"
@@ -73,4 +75,3 @@ if __name__ == "__main__":
         benchmark_id=benchmark_id,
     )
     print(override)
-

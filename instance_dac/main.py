@@ -16,7 +16,12 @@ from dacbench.logger import Logger, log2dataframe, load_logs
 from dacbench.agents.simple_agents import RandomAgent
 from dacbench.benchmarks import SigmoidBenchmark
 from dacbench.runner import run_benchmark
-from dacbench.wrappers import PerformanceTrackingWrapper, StateTrackingWrapper,  ObservationWrapper, ActionFrequencyWrapper
+from dacbench.wrappers import (
+    PerformanceTrackingWrapper,
+    StateTrackingWrapper,
+    ObservationWrapper,
+    ActionFrequencyWrapper,
+)
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
 from instance_dac.agent import PPO
@@ -33,7 +38,7 @@ from omegaconf import OmegaConf
 # def main(cfg: DictConfig) -> None:
 #     cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
 #     printr(cfg_dict)
-    
+
 import argparse
 import os
 from subprocess import Popen
@@ -54,30 +59,27 @@ def main():
     # unknown_args = [f"'{a}'" for a in unknown_args]
 
     # log = logging.getLogger("Dispatch")
-    
+
     add_multirun_flag = False
     if unknown_args:
         if unknown_args[-1] == "-m":
             unknown_args.pop(-1)
             add_multirun_flag = True
 
-        unknown_args = [
-            f"'{a}'" if "range" in a else a for a in unknown_args  
-        ]
-    printr("-"*50)
+        unknown_args = [f"'{a}'" if "range" in a else a for a in unknown_args]
+    printr("-" * 50)
     printr("Hydra Overrides")
     printr(unknown_args)
-
 
     if args.oracle:
         with initialize(version_base=None, config_path="configs"):
             _overrides = [o for o in unknown_args if ("benchmark" in o or "inst" in o)]
             cfg = compose(config_name="base", overrides=_overrides)
-            printr("-"*50)
+            printr("-" * 50)
             printr("Source Config")
             printr(cfg)
-            printr("-"*50)
-        
+            printr("-" * 50)
+
         override, n_instances = generate_oracle_set(
             instance_set_path=cfg.benchmark.config.instance_set_path,
             instance_set_id=cfg.instance_set_id,
@@ -89,7 +91,7 @@ def main():
         unknown_args.append("'instance_set_selection=oracle'")
 
         printr(f"Found {n_instances} instances.")
-        printr("-"*50)
+        printr("-" * 50)
 
     if add_multirun_flag:
         unknown_args += ["-m"]
@@ -101,13 +103,14 @@ def main():
 
     printr("Command")
     printr(" ".join(cmd))
-    printr("-"*50)
+    printr("-" * 50)
 
     if not args.dry:
         env = os.environ.copy()
         env["OMP_NUM_THREADS"] = "1"
         p = Popen(" ".join(cmd), env=env, shell=True)
         p.communicate()
+
 
 if __name__ == "__main__":
     main()
