@@ -86,5 +86,6 @@ def load_generalization_data(
 
     # Compute distance between oracle performance and performance on full training set
     diffs = pd.concat([calc_dist(perf, func) for func in distance_functions], axis=1).reset_index()
+    diffs = diffs.melt(id_vars=["instance"], value_vars=[f.__name__ for f in distance_functions], value_name="distance", var_name="distance_name")
 
     return diffs

@@ -24,17 +24,19 @@ matplotlib.rcParams["pdf.fonttype"] = 42
 matplotlib.rcParams["ps.fonttype"] = 42
 
 
-def l1_dist(x: pd.Series) -> float:
+def l1_dist(x: pd.Series) -> float | None:
     ret = None
     if "oracle" in x:
         ret = x["oracle"] - x["full"]
+        ret = float(ret.values)
     return ret
 
 
-def l2_dist(x: pd.Series) -> float:
+def l2_dist(x: pd.Series) -> float | None:
     ret = None
     if "oracle" in x:
         ret = (x["oracle"] - x["full"]) ** 2
+        ret = float(ret.values)
     return ret
 
 
@@ -52,4 +54,9 @@ if __name__ == "__main__":
     diffs = load_generalization_data(
         path=path, train_instance_set_id="sigmoid_2D3M_train", distance_functions=[l1_dist, l2_dist]
     )
-    printr(diffs)
+    diffs.reset_index(drop=True, inplace=True)
+    diffs["distance"][diffs["distance"].isna()] = 0
+    diffs.to_csv("tmp.csv")
+
+    sb.boxplot(data=diffs, x="distance_name", y="distance")
+    plt.show()
