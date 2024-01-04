@@ -16,7 +16,16 @@ benchmark:
         instance_set_path: {instance_set_path_train}
         test_set_path: ../instance_sets/sigmoid/sigmoid_2D3M_test.csv
 
-instance_set_id: {instance_set_id}
+instance_set_id: {oracle_instance_set_id}
+instance_id: {instance_id}
+instance_set_selection: oracle
+source_instance_set_id: {instance_set_id}
+hydra:
+  run:
+    dir: runs/${{benchmark_id}}/{instance_set_id}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}} 
+  sweep:
+    dir: runs/${{benchmark_id}}
+    subdir: {instance_set_id}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}}
 """
 
     # Assuming DACBench lies in instance-dac
@@ -44,7 +53,7 @@ instance_set_id: {instance_set_id}
             instance_set_path_train.write_text(line + "\n")
 
             oracle_instance_set_id = f"{instance_set_id}_oracle_{instance_id}"
-            config_text = template.format(instance_set_path_train=instance_set_path_train, instance_set_id=oracle_instance_set_id)
+            config_text = template.format(instance_set_id=instance_set_id, instance_set_path_train=instance_set_path_train, oracle_instance_set_id=oracle_instance_set_id, instance_id=str(instance_id))
             config_path = target_instance_set_config_dir / f"instance_{instance_id}.yaml"
             config_path.parent.mkdir(exist_ok=True, parents=True)
             config_path.write_text(config_text)
