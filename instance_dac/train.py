@@ -26,7 +26,10 @@ import coax
 
 
 def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger]:
-    ipath = Path(cfg.benchmark.config.test_set_path)
+    if not cfg.eval_on_train_set:
+        ipath = Path(cfg.benchmark.config.test_set_path)
+    else:
+        ipath = Path(cfg.benchmark.config.instance_set_path)
     experiment_name = "train" if not cfg.evaluate else f"eval/{ipath.stem}"
     logger = Logger(
         experiment_name=experiment_name,
@@ -148,7 +151,8 @@ def main(cfg: DictConfig) -> None:
     if not cfg.evaluate:
         train(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
     else:
-        env.use_test_set()
+        if not cfg.eval_on_train_set:
+            env.use_test_set()
         agent.load(Path(logger.output_path).parent)
         evaluate(env, agent, logger, cfg.num_eval_episodes)
 

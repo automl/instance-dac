@@ -17,6 +17,7 @@ num_episodes: ???  # set in benchmark/...
 instance_set_selection: full
 
 evaluate: False
+eval_on_train_set: False
 num_eval_episodes: 10  # per instance
 
 
