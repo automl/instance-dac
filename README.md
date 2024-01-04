@@ -25,13 +25,21 @@ rsync -azv --delete -e 'ssh -J intexml2@fe.noctua2.pc2.uni-paderborn.de' intexml
 # SIGMOID
 #####################################################
 # 1. Train on 2D3M_train for 10 seeds
-python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,10)' -m
+python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,11)' -m
 
 # Evaluate on train set
-python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_train.csv 'seed=range(1,10)' -m
+python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_train.csv 'seed=range(1,11)' -m
 
 # Evaluate on test set 1
-python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_test.csv 'seed=range(1,10)' -m
+python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_test.csv 'seed=range(1,11)' -m
+
+# Train oracle
+# Pass the same commands to main.py. No extra option normally runs the command.
+# Adding --oracle trains the oracle agents for each single instance.
+# Running with --dry only shows the run command.
+# ☝ Hint: The script will show you the number of instances in the instance set. Normally 
+#          allowed slurm job array size is limited to 1000. Set the number of seeds accordingly.
+python instance_dac/main.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,11)' -m --oracle
 
 
 #####################################################
