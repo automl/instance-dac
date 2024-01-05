@@ -51,6 +51,13 @@ evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D
 # (c) on full test set
 evaluate=True
 
+# Train on selected instances
+python instance_dac/train.py +benchmark=sigmoid '+inst/sigmoid/selector/source_2D3M_train=glob(*)' 'seed=range(1,11)' -m
+
+'+inst/sigmoid/selector/source_2D3M_train=2D3M_train__Train__DS__Catch22__RA__0.7__1'
+
+# Eval on original train set
+
 
 #####################################################
 # CMA-ES
