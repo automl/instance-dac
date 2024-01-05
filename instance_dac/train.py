@@ -42,14 +42,15 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
         step_write_frequency=None,
         episode_write_frequency=1,
     )
-    state_logger = logger.add_module(StateTrackingWrapper)
     performance_logger = logger.add_module(PerformanceTrackingWrapper)
-    action_logger = logger.add_module(ActionFrequencyWrapper)
-    reward_logger = logger.add_module(RewardTrackingWrapper)
+    
 
     env = PerformanceTrackingWrapper(env, logger=performance_logger)
     # Reduce log sizes
     if cfg.evaluate:
+        state_logger = logger.add_module(StateTrackingWrapper)
+        action_logger = logger.add_module(ActionFrequencyWrapper)
+        reward_logger = logger.add_module(RewardTrackingWrapper)
         env = StateTrackingWrapper(env, logger=state_logger)
         env = ActionFrequencyWrapper(env, logger=action_logger)
         env = RewardTrackingWrapper(env, logger=reward_logger)
