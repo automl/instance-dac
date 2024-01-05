@@ -87,6 +87,7 @@ selector:
 
     name = selector_instance_set_id + ".yaml"
     inst_config_fname = Path(f"instance_dac/configs/inst/{benchmark_id.lower()}/selector") / f"source_{instance_set_id}" / name
+    inst_config_fname.parent.mkdir(exist_ok=True, parents=True)
     inst_config_fname.write_text(content)
 
 if __name__ == "__main__":
