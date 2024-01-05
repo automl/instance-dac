@@ -8,6 +8,6 @@ hydra:
     cpus_per_task: 1
     name: instdac
     timeout_min: 1440
-    mem_per_cpu: 64
+    mem_gb: 64
     # setup:
     #   - micromamba activate /scratch/hpc-prf-intexml/cbenjamins/envs/instancedac
