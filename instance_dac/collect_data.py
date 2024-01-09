@@ -83,5 +83,5 @@ def load_traineval_trajectories(path: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    path = Path("runs/Sigmoid")
+    path = Path("runs/Sigmoid/2D3M_train/full")
     df = load_traineval_trajectories(path=path)

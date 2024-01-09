@@ -55,8 +55,9 @@ if __name__ == "__main__":
         path=path, train_instance_set_id="sigmoid_2D3M_train", distance_functions=[l1_dist, l2_dist]
     )
     diffs.reset_index(drop=True, inplace=True)
-    diffs["distance"][diffs["distance"].isna()] = 0
+    # diffs["distance"][diffs["distance"].isna()] = 0
     diffs.to_csv("tmp.csv")
 
     sb.boxplot(data=diffs, x="distance_name", y="distance")
+    sb.histplot(data=diffs, x="distance", hue="distance_name")
     plt.show()
