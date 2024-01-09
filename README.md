@@ -52,7 +52,17 @@ evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D
 evaluate=True
 
 # Train on selected instances
-python instance_dac/train.py +benchmark=sigmoid '+inst/sigmoid/selector/source_2D3M_train=glob(*)' 'seed=range(1,11)' -m
+
+# 1. Sync selector csvs (on local)
+rsync -azv --delete -e 'ssh -J intexml2@fe.noctua2.pc2.uni-paderborn.de' data/selected_by_selector intexml2@n2login5:/scratch/hpc-prf-intexml/cbenjamins/repos/instance-dac/data 
+# 2. Parse selector csvs (on remote)
+python instance_dac/utils/parse_selector_sets.py
+# (Allocate job)
+salloc -t 24:00:00 -c 64
+# 3. Train
+python instance_dac/train.py +benchmark=sigmoid '+inst/sigmoid/selector/source_2D3M_train=glob(*)' 'seed=range(1,11)' +cluster=local instance_set_selection=selector -m
+# 4. Evaluate on source set
+python instance_dac/train.py +benchmark=sigmoid '+inst/sigmoid/selector/source_2D3M_train=glob(*)' 'seed=range(1,11)' +cluster=local instance_set_selection=selector evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_train.csv -m
 
 '+inst/sigmoid/selector/source_2D3M_train=2D3M_train__Train__DS__Catch22__RA__0.7__1'
 
