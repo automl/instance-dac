@@ -8,6 +8,7 @@ from typing import Any
 from rich import print as printr
 from rich.progress import TimeElapsedColumn, MofNCompleteColumn
 import numpy as np
+from omegaconf import OmegaConf
 
 from seaborn import plotting_context
 import seaborn as sb
@@ -45,6 +46,13 @@ def _load_single_performance_data(filename: str, drop_time: bool = True) -> pd.D
     else:
         drop_columns = None
     data = log2dataframe(logs, wide=True, drop_columns=drop_columns)
+
+    if "eval" in str(filename):
+        cfg_fn = Path(filename).parent.parent.parent.parent / ".hydra/config.yaml"
+    else:
+        cfg_fn = Path(filename).parent.parent.parent / ".hydra/config.yaml"
+    cfg = OmegaConf.load(cfg_fn)
+    data["instance_set_id"] = cfg.instance_set_id
     return data
 
 
@@ -77,6 +85,13 @@ def load_generalization_data(
     # Load oracle data
     oracle_data = load_performance_data(path, drop_time=True, search_prefix=f"oracle/**/eval/instance_*/")
     oracle_data["origin"] = "oracle"
+
+    data = pd.concat([data, oracle_data])
+    del oracle_data
+
+    # Load selector data
+    selector_data = load_performance_data(path, drop_time=True, search_prefix=f"selector/**/eval/{train_instance_set_id}/")
+    selector_data["origin"] = "selector"
 
     data = pd.concat([data, oracle_data])
     del oracle_data
