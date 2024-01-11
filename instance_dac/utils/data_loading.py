@@ -93,8 +93,10 @@ def load_generalization_data(
     selector_data = load_performance_data(path, drop_time=True, search_prefix=f"selector/**/eval/{train_instance_set_id}/")
     selector_data["origin"] = "selector"
 
-    data = pd.concat([data, oracle_data])
-    del oracle_data
+    data = pd.concat([data, selector_data])
+    del selector_data
+
+    data.to_csv("data.csv")
 
     # Aggregate performance per episode by mean, group by origin and instance
     perf = data.groupby(["origin", "instance"])["overall_performance"].mean()
@@ -102,5 +104,7 @@ def load_generalization_data(
     # Compute distance between oracle performance and performance on full training set
     diffs = pd.concat([calc_dist(perf, func) for func in distance_functions], axis=1).reset_index()
     diffs = diffs.melt(id_vars=["instance"], value_vars=[f.__name__ for f in distance_functions], value_name="distance", var_name="distance_name")
+
+    diffs.to_csv("diffs.csv")
 
     return diffs
