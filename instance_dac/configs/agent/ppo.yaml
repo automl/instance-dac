@@ -1,7 +1,7 @@
 # @package _global_
 agent_name: ppo
 agent:
-  _target_: instance_dac.agent.PPO
+  _target_: instance_dac.agents.ppo.PPO
   _partial_: True
   seed: ${seed}
 

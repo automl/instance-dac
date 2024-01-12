@@ -24,7 +24,7 @@ from dacbench.wrappers import (
 )
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
-from instance_dac.agent import PPO
+from instance_dac.agents.ppo import PPO
 from instance_dac.wrapper import RewardTrackingWrapper
 
 from instance_dac.utils.oracle_set_generation import generate_oracle_set
