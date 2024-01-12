@@ -7,6 +7,7 @@ from rich import print as printr
 from rich import inspect
 from instance_dac.make import make_benchmark
 import gymnasium
+from hydra.utils import instantiate
 from gymnasium.wrappers import FlattenObservation, NormalizeObservation
 
 from pathlib import Path
@@ -24,7 +25,6 @@ from dacbench.wrappers import (
 )
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
-from instance_dac.agent import PPO
 from instance_dac.wrapper import RewardTrackingWrapper
 
 import coax
@@ -143,6 +143,11 @@ def train(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = None,
     env.close()
 
 
+def make_agent(cfg: DictConfig, env: AbstractEnv) -> AbstractDACBenchAgent:
+    agent = instantiate(cfg.agent)(env=env)
+    return agent
+
+
 @hydra.main(config_path="configs", config_name="base.yaml")
 def main(cfg: DictConfig) -> None:
     cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
@@ -152,7 +157,8 @@ def main(cfg: DictConfig) -> None:
 
     env, logger = wrap_and_log(cfg, env)
 
-    agent = PPO(env, seed=cfg.seed)
+    # Expects a partially instantiated agent
+    agent = make_agent(cfg, env)
 
     if not cfg.evaluate:
         train(env=env, agent=agent, num_episodes=cfg.num_episodes, logger=logger)
