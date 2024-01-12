@@ -24,6 +24,9 @@ rsync -azv --delete -e 'ssh -J intexml2@fe.noctua2.pc2.uni-paderborn.de' intexml
 #####################################################
 # SIGMOID
 #####################################################
+# 0. Evaluate random baseline on 2D3M
+python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True eval_on_train_set=True agent=random 'seed=range(1,11)' -m
+
 # 1. Train on 2D3M_train for 10 seeds
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,11)' -m
 
