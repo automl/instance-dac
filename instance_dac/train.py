@@ -165,7 +165,8 @@ def main(cfg: DictConfig) -> None:
     else:
         if not cfg.eval_on_train_set:
             env.use_test_set()
-        agent.load(Path(logger.output_path).parent)
+        if hasattr(agent, "load"):
+            agent.load(Path(logger.output_path).parent)
         evaluate(env, agent, logger, cfg.num_eval_episodes)
 
 
