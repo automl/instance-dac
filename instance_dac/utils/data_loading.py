@@ -74,9 +74,7 @@ def calc_dist(data: pd.Series, distance_function) -> pd.Series:
     return ret
 
 
-def load_generalization_data(
-    path: str | Path, train_instance_set_id: str, distance_functions: list[callable]
-) -> pd.DataFrame:
+def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame:
     path = Path(path)
     # Load full train set data, eval on train set
     data = load_performance_data(path, drop_time=True, search_prefix=f"full/**/eval/{train_instance_set_id}/")
@@ -97,6 +95,14 @@ def load_generalization_data(
     del selector_data
 
     data.to_csv("data.csv")
+    return data
+
+def load_generalization_data(
+    path: str | Path, train_instance_set_id: str, distance_functions: list[callable]
+) -> pd.DataFrame:
+    path = Path(path)
+    
+    data = load_eval_data(path=path, train_instance_set_id=train_instance_set_id)
 
     # Aggregate performance per episode by mean, group by origin and instance
     perf = data.groupby(["origin", "instance"])["overall_performance"].mean()
