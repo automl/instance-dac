@@ -10,3 +10,4 @@ dm-haiku
 optax
 imageio
 hydra-submitit-launcher
+rliable
