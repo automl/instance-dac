@@ -57,10 +57,10 @@ def _load_single_performance_data(filename: str, drop_time: bool = True) -> pd.D
 
 
 def load_performance_data(
-    path: str | Path, id: str = "PerformanceTrackingWrapper.jsonl", search_prefix: str = "", **kwargs
+    path: str | Path, identifier: str = "PerformanceTrackingWrapper.jsonl", search_prefix: str = "", **kwargs
 ) -> pd.DataFrame:
     path = Path(path)
-    filenames = list(path.glob(f"**/{search_prefix}{id}"))
+    filenames = list(path.glob(f"**/{search_prefix}{identifier}"))
     print(filenames)
     func = partial(_load_single_performance_data, **kwargs)
     dfs = map_multiprocessing(func, filenames)
