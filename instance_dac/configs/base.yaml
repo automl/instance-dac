@@ -25,12 +25,14 @@ num_eval_episodes: 10  # per instance
 
 log_only_performance: False  # TODO Check if we need all logs: Relevant for evaluating oracle? 
 
+agent_name: ??? # set in agent
+
 
 
 outdir: runs/${benchmark_id}
 hydra:
   run:
-    dir: runs/${benchmark_id}/${instance_set_id}/${instance_set_selection}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+    dir: runs/${benchmark_id}/${instance_set_id}/${agent_name}/${instance_set_selection}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
   sweep:
     dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
-    subdir: ${instance_set_id}/${instance_set_selection}/${seed}
+    subdir: ${instance_set_id}//${agent_name}/${instance_set_selection}/${seed}
