@@ -78,6 +78,10 @@ def calc_dist(data: pd.Series, distance_function) -> pd.Series:
 
 
 def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame:
+    # Assumes following path structure:
+    # runs/Sigmoid/2D3M_train/ppo/full/2/logs/eval/sigmoid_2D3M_train/PerformanceTrackingWrapper.jsonl
+    # runs/<benchmark id>/<train/target instance set id>/<agent name>/<train instance set (subset)>/<seed>/logs/eval/<train instance set id>/...
+
     path = Path(path)
     # Load full train set data, eval on train set
     data = load_performance_data(path, drop_time=True, search_prefix=f"full/**/eval/{train_instance_set_id}/")
@@ -96,6 +100,13 @@ def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame
 
     data = pd.concat([data, selector_data])
     del selector_data
+
+    random_perf_path = path.parent / "random"
+    if random_perf_path.exists():
+        perf_data = load_performance_data(random_perf_path)
+        perf_data["origin"] = "random"
+        data = pd.concat([data, perf_data])
+        del perf_data
 
     data.to_csv(f"eval_data_{train_instance_set_id}.csv")
     return data
