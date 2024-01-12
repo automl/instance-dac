@@ -97,7 +97,7 @@ def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame
     data = pd.concat([data, selector_data])
     del selector_data
 
-    data.to_csv("data.csv")
+    data.to_csv(f"eval_data_{train_instance_set_id}.csv")
     return data
 
 def load_generalization_data(
