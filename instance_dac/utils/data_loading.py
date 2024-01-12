@@ -52,6 +52,9 @@ def _load_single_performance_data(filename: str, drop_time: bool = True) -> pd.D
     else:
         cfg_fn = Path(filename).parent.parent.parent / ".hydra/config.yaml"
     cfg = OmegaConf.load(cfg_fn)
+    
+    if cfg.instance_set_selection == "selector":
+        data["selector_run"] = cfg.selector.seed
     data["instance_set_id"] = cfg.instance_set_id
     return data
 
