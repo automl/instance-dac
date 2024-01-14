@@ -4,3 +4,4 @@ benchmark:
 
 benchmark_id: Sigmoid
 num_episodes: 1000
+total_timesteps: 10000

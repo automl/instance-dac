@@ -1,0 +1,12 @@
+# @package _global_
+agent_name: dqn_sb3
+agent:
+  _target_: instance_dac.agents.sb3.SB3Agent
+  _partial_: True
+  agent:
+    _target_: stable_baselines3.dqn.DQN
+    _partial_: True
+    policy: MlpPolicy
+    seed: ${seed}
+    verbose: 0
+  
