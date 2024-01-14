@@ -33,11 +33,14 @@ def make_func_pi(env):
                     shared,
                     hk.Linear(8),
                     jax.nn.relu,
-                    hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
-                    hk.Reshape(env.action_space.shape),
+                    # hk.Linear(prod(env.action_space.shape), w_init=jnp.zeros),
+                    # hk.Reshape(env.action_space.shape),
+                    hk.Linear(env.action_space.n, w_init=jnp.zeros),
+                    # hk.Reshape(env.action_space.shape),
                 )
             )
-            return {"logits": logits}
+            # logits = hk.Linear(env.action_space.n, w_init=jnp.zeros)
+            return {"logits": logits(S)}
         elif isinstance(env.action_space, MultiDiscrete):
             output = []
             for n in env.action_space.nvec:
@@ -80,15 +83,15 @@ def make_func_pi(env):
 
 
 # Value Function definition
-def v_func(env):
+def v_func(env, n_units: int = 8):
     def func_v(S, is_training):
         seq = hk.Sequential(
             (
-                hk.Linear(8),
+                hk.Linear(n_units),
                 jax.nn.relu,
-                hk.Linear(8),
+                hk.Linear(n_units),
                 jax.nn.relu,
-                hk.Linear(8),
+                hk.Linear(n_units),
                 jax.nn.relu,
                 hk.Linear(1, w_init=jnp.zeros),
                 jnp.ravel,

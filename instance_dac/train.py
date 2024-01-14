@@ -22,7 +22,7 @@ from dacbench.wrappers import (
     StateTrackingWrapper,
     ObservationWrapper,
     ActionFrequencyWrapper,
-    MultiDiscreteActionWrapper
+    MultiDiscreteActionWrapper,
 )
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
@@ -45,7 +45,6 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
         episode_write_frequency=1,
     )
     performance_logger = logger.add_module(PerformanceTrackingWrapper)
-    
 
     env = PerformanceTrackingWrapper(env, logger=performance_logger)
     # Reduce log sizes
@@ -103,12 +102,12 @@ def evaluate(env: AbstractEnv, agent: AbstractDACBenchAgent, logger: Logger = No
 
 
 def train(
-        env: AbstractEnv, 
-        agent: AbstractDACBenchAgent, 
-        logger: Logger = None, 
-        num_episodes: int = 10,
-        total_timesteps: int | None = None
-    ):
+    env: AbstractEnv,
+    agent: AbstractDACBenchAgent,
+    logger: Logger = None,
+    num_episodes: int = 10,
+    total_timesteps: int | None = None,
+):
     if logger is not None:
         logger.reset_episode()
         logger.set_env(env)

@@ -52,7 +52,7 @@ def _load_single_performance_data(filename: str, drop_time: bool = True) -> pd.D
     else:
         cfg_fn = Path(filename).parent.parent.parent / ".hydra/config.yaml"
     cfg = OmegaConf.load(cfg_fn)
-    
+
     if cfg.instance_set_selection == "selector":
         data["selector_run"] = cfg.selector.seed
     data["instance_set_id"] = cfg.instance_set_id
@@ -95,7 +95,9 @@ def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame
     del oracle_data
 
     # Load selector data
-    selector_data = load_performance_data(path, drop_time=True, search_prefix=f"selector/**/eval/{train_instance_set_id}/")
+    selector_data = load_performance_data(
+        path, drop_time=True, search_prefix=f"selector/**/eval/{train_instance_set_id}/"
+    )
     selector_data["origin"] = "selector"
 
     data = pd.concat([data, selector_data])
@@ -111,11 +113,12 @@ def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame
     data.to_csv(f"eval_data_{train_instance_set_id}.csv")
     return data
 
+
 def load_generalization_data(
     path: str | Path, train_instance_set_id: str, distance_functions: list[callable]
 ) -> pd.DataFrame:
     path = Path(path)
-    
+
     data = load_eval_data(path=path, train_instance_set_id=train_instance_set_id)
 
     # Aggregate performance per episode by mean, group by origin and instance
@@ -123,7 +126,12 @@ def load_generalization_data(
 
     # Compute distance between oracle performance and performance on full training set
     diffs = pd.concat([calc_dist(perf, func) for func in distance_functions], axis=1).reset_index()
-    diffs = diffs.melt(id_vars=["instance"], value_vars=[f.__name__ for f in distance_functions], value_name="distance", var_name="distance_name")
+    diffs = diffs.melt(
+        id_vars=["instance"],
+        value_vars=[f.__name__ for f in distance_functions],
+        value_name="distance",
+        var_name="distance_name",
+    )
 
     diffs.to_csv("diffs.csv")
 

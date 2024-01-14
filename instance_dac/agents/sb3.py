@@ -20,11 +20,10 @@ class LoggerCallback(BaseCallback):
             self.db_logger.next_step()
 
             # episode end
-            if np.any(self.locals["dones"]):  
+            if np.any(self.locals["dones"]):
                 self.db_logger.next_episode()
 
         return super().on_step()
-    
 
 
 class SB3Agent(AbstractDACBenchAgent):
@@ -35,19 +34,18 @@ class SB3Agent(AbstractDACBenchAgent):
         self.logger_callback = LoggerCallback(logger=logger)
 
     def act(self, state, reward):
-        action, state = self.agent.predict(observation=state) 
+        action, state = self.agent.predict(observation=state)
         return action
-    
+
     def train(self, next_state, reward):
         return super().train(next_state, reward)
-    
+
     def end_episode(self, state, reward):
         return super().end_episode(state, reward)
-    
+
     def save(self, path: Path):
         save_path = path / f"agent.zip"
         self.agent.save(save_path)
 
     def load(self, path: Path):
         self.agent = self.agent.load(path / f"agent.zip")
-    
