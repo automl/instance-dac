@@ -21,10 +21,10 @@ instance_set_selection: oracle
 source_instance_set_id: {instance_set_id}
 hydra:
   run:
-    dir: runs/${{benchmark_id}}/{instance_set_id}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}} 
+    dir: runs/${{benchmark_id}}/{instance_set_id}/${{agent_name}}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}} 
   sweep:
     dir: runs/${{benchmark_id}}
-    subdir: {instance_set_id}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}}
+    subdir: {instance_set_id}/${{agent_name}}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}}
 """
 
     # Assuming DACBench lies in instance-dac
