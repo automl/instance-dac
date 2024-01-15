@@ -55,8 +55,14 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
         env = StateTrackingWrapper(env, logger=state_logger)
         env = ActionFrequencyWrapper(env, logger=action_logger)
         env = RewardTrackingWrapper(env, logger=reward_logger)
-    # env = coax.wrappers.TrainMonitor(env, name=experiment_name)
-    env = Monitor(env=env)
+
+    # Agent not instantiated yet
+    # stablebaselines
+    if "SB3" in cfg.agent._target_:
+        env = Monitor(env=env)
+    # coax
+    else:
+        env = coax.wrappers.TrainMonitor(env, name=experiment_name)
 
     # Add env to logger
     logger.set_env(env)
