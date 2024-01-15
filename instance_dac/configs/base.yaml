@@ -35,4 +35,4 @@ hydra:
     dir: runs/${benchmark_id}/${instance_set_id}/${agent_name}/${instance_set_selection}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
   sweep:
     dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
-    subdir: ${instance_set_id}//${agent_name}/${instance_set_selection}/${seed}
+    subdir: ${instance_set_id}/${agent_name}/${instance_set_selection}/${seed}
