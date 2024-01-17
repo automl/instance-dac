@@ -16,7 +16,11 @@ python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluat
 
 Sync data
 ```bash
+# Sync runs
 rsync -azv --delete -e 'ssh -J intexml2@fe.noctua2.pc2.uni-paderborn.de' intexml2@n2login5:/scratch/hpc-prf-intexml/cbenjamins/repos/instance-dac/runs .
+
+# Sync eval data
+rsync -azv --delete -e 'ssh -J intexml2@fe.noctua2.pc2.uni-paderborn.de' intexml2@n2login5:/scratch/hpc-prf-intexml/cbenjamins/repos/instance-dac/analysis/*.csv analysis
 ```
 
 ## Experiments
@@ -31,7 +35,8 @@ python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluat
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,11)' -m
 
 # Evaluate on train set
-python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_train.csv 'seed=range(1,11)' -m
+# python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_train.csv 'seed=range(1,11)' -m
+python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True eval_on_train_set=True 'seed=range(1,11)' -m
 
 # Evaluate on test set 1
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True benchmark.config.test_set_path=../instance_sets/sigmoid/sigmoid_2D3M_test.csv 'seed=range(1,11)' -m
@@ -80,6 +85,10 @@ python instance_dac/train.py +benchmark=sigmoid '+inst/sigmoid/selector/source_2
 #####################################################
 # CMA-ES
 #####################################################
+# 0. Evaluate random baseline
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default evaluate=True eval_on_train_set=True agent=random 'seed=range(1,11)' -m
+
+
 python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,21)' +cluster=noctua -m
 
 ```
