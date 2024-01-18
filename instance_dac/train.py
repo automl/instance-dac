@@ -159,6 +159,9 @@ def train(
 
                 s = s_next
 
+            if logger is not None and i % 10:
+                agent.save(Path(logger.output_path).parent)
+
             if logger is not None:
                 logger.next_episode()
 
