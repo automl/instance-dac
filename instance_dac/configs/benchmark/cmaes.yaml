@@ -4,4 +4,4 @@ benchmark:
 
 benchmark_id: CMA-ES
 num_episodes: 1000
-total_timesteps: 100000
+total_timesteps: 1000000

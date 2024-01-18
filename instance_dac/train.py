@@ -120,7 +120,7 @@ def train(
 
     # stablebaselines3
     if type(agent).__name__.startswith("SB3"):
-        agent.agent.learn(total_timesteps=total_timesteps)
+        agent.agent.learn(total_timesteps=total_timesteps, callback=agent.checkpoint_callback)
         if logger is not None:
             agent.save(Path(logger.output_path).parent)
         env.close()
