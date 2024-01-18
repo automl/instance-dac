@@ -1,5 +1,5 @@
 # @package _global_
-agent_name: dqn_sb3
+agent_name: ppo_sb3
 agent:
   _target_: instance_dac.agents.sb3.SB3Agent
   _partial_: True
