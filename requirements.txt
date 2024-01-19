@@ -11,3 +11,4 @@ optax
 imageio
 hydra-submitit-launcher
 rliable
+stable-baselines3[extra]
