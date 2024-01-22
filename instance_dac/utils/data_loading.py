@@ -80,7 +80,7 @@ def calc_dist(data: pd.Series, distance_function) -> pd.Series:
 def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) -> pd.DataFrame:
     # Assumes following path structure:
     # runs/Sigmoid/2D3M_train/ppo/full/2/logs/eval/sigmoid_2D3M_train/PerformanceTrackingWrapper.jsonl
-    # runs/<benchmark id>/<train/target instance set id>/<agent name>/<train instance set (subset)>/<seed>/logs/eval/<train instance set id>/...
+    # runs/<benchmark id>/<train/target instance set>/<agent name>/<train instance set (subset) id>/<seed>/logs/eval/<train instance set id>/...
 
     path = Path(path)
     # Load full train set data, eval on train set
