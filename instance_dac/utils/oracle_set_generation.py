@@ -42,12 +42,17 @@ hydra:
     text = instance_set_path.read_text()
     lines = text.split("\n")
     n_instances = 0
+    header_line = None
+    if lines[0].startswith("ID"):
+        header_line = lines[0]
     for line in lines:
         if line and not line.startswith("ID"):
             n_instances += 1
             instance_id = ast.literal_eval(line.split(",")[0])
             instance_set_path_train = target_instance_set_dir / f"instance_{instance_id}.csv"
             instance_set_path_train.parent.mkdir(exist_ok=True, parents=True)
+            if header_line:
+                line = header_line + "\n" + line
             instance_set_path_train.write_text(line + "\n")
 
             oracle_instance_set_id = f"{instance_set_id}_oracle_{instance_id}"
