@@ -77,18 +77,20 @@ def calc_dist(data: pd.Series, distance_function) -> pd.Series:
     return ret
 
 
-def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame:
+def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) -> pd.DataFrame:
     # Assumes following path structure:
     # runs/Sigmoid/2D3M_train/ppo/full/2/logs/eval/sigmoid_2D3M_train/PerformanceTrackingWrapper.jsonl
     # runs/<benchmark id>/<train/target instance set id>/<agent name>/<train instance set (subset)>/<seed>/logs/eval/<train instance set id>/...
 
     path = Path(path)
     # Load full train set data, eval on train set
-    data = load_performance_data(path, drop_time=True, search_prefix=f"full/**/eval/{train_instance_set_id}/")
+    data = load_performance_data(path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/")
     data["origin"] = "full"
 
     # Load oracle data
-    oracle_data = load_performance_data(path, drop_time=True, search_prefix=f"oracle/**/eval/instance_*/")
+    idx = 3 if str(path.parts[0]) == ".." else 2
+    oracle_path = Path("/".join(path.parts[:idx]))
+    oracle_data = load_performance_data(oracle_path / instance_set, drop_time=True, search_prefix=f"oracle/**/eval/instance_*/")
     oracle_data["origin"] = "oracle"
 
     data = pd.concat([data, oracle_data])
@@ -96,7 +98,7 @@ def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame
 
     # Load selector data
     selector_data = load_performance_data(
-        path, drop_time=True, search_prefix=f"selector/**/eval/{train_instance_set_id}/"
+        path, drop_time=True, search_prefix=f"selector/**/eval/{instance_set_id}/"
     )
     selector_data["origin"] = "selector"
 
@@ -110,16 +112,18 @@ def load_eval_data(path: str | Path, train_instance_set_id: str) -> pd.DataFrame
         data = pd.concat([data, perf_data])
         del perf_data
 
-    data.to_csv(f"eval_data_{train_instance_set_id}.csv")
+    fn = f"eval_data_{instance_set_id}.csv"
+    data.to_csv(fn, index=False)
+    printr("Saved to", Path(fn).resolve())
     return data
 
 
 def load_generalization_data(
-    path: str | Path, train_instance_set_id: str, distance_functions: list[callable]
+    path: str | Path, instance_set_id: str, distance_functions: list[callable]
 ) -> pd.DataFrame:
     path = Path(path)
 
-    data = load_eval_data(path=path, train_instance_set_id=train_instance_set_id)
+    data = load_eval_data(path=path, instance_set_id=instance_set_id)
 
     # Aggregate performance per episode by mean, group by origin and instance
     perf = data.groupby(["origin", "instance"])["overall_performance"].mean()
