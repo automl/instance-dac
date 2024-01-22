@@ -89,7 +89,17 @@ python instance_dac/train.py +benchmark=sigmoid '+inst/sigmoid/selector/source_2
 python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default evaluate=True eval_on_train_set=True agent=random 'seed=range(1,11)' -m
 
 
-python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,21)' +cluster=noctua -m
+# SB3 PPO
+# Train
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,11)' +cluster=noctua agent=ppo_sb3 -m
+# Eval on test
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,11)' +cluster=noctua agent=ppo_sb3 evaluate=True -m
+# Eval on train
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,11)' +cluster=noctua agent=ppo_sb3 evaluate=True eval_on_train_set=True -m
+# Train oracle
+python instance_dac/main.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,11)' -m --oracle --dry
+# --->
+python instance_dac/train.py +benchmark=cmaes 'seed=range(1,11)' '+inst/cmaes/oracle_default=glob(*)' 'instance_set_selection=oracle' +cluster=noctua -m
 
 ```
 
