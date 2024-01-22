@@ -82,7 +82,7 @@ def main():
 
         override, n_instances = generate_oracle_set(
             instance_set_path=cfg.benchmark.config.instance_set_path,
-            instance_set_id=cfg.instance_set_id,
+            instance_set_id=cfg.test_set_id,
             benchmark_id=cfg.benchmark_id,
             test_set_path=cfg.benchmark.config.test_set_path
         )

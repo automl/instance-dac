@@ -6,3 +6,4 @@ benchmark:
     test_set_path: ../instance_sets/cma/cma_test.csv
 
 instance_set_id: default
+test_set_id: cma_test

@@ -6,3 +6,4 @@ benchmark:
     test_set_path: ../instance_sets/sigmoid/sigmoid_2D3M_test.csv
 
 instance_set_id: 2D3M_train
+test_set_id: 2D3M_test

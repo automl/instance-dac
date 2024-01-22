@@ -22,10 +22,10 @@ instance_set_selection: oracle
 source_instance_set_id: {instance_set_id}
 hydra:
   run:
-    dir: runs/${{benchmark_id}}/{instance_set_id}/${{agent_name}}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}} 
+    dir: runs/${{benchmark_id}}/${{source_instance_set_id}}/${{agent_name}}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}} 
   sweep:
     dir: runs/${{benchmark_id}}
-    subdir: {instance_set_id}/${{agent_name}}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}}
+    subdir: ${{source_instance_set_id}}/${{agent_name}}/${{instance_set_selection}}/instance_${{instance_id}}/${{seed}}
 """
 
     # Assuming DACBench lies in instance-dac
@@ -74,9 +74,9 @@ hydra:
 
 if __name__ == "__main__":
     instance_set_path = "../instance_sets/sigmoid/sigmoid_2D3M_train.csv"
-    instance_set_id = "2D3M_train"
+    instance_set_id = "2D3M_test"
     benchmark_id = "Sigmoid"
-    test_set_path = "../instance_sets/cma/cma_test.csv"
+    test_set_path = "../instance_sets/sigmoid/sigmoid_2D3M_test.csv"
 
     override = generate_oracle_set(
         instance_set_path=instance_set_path,
