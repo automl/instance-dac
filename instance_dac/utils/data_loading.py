@@ -89,8 +89,8 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
 
     # Load oracle data
     idx = 3 if str(path.parts[0]) == ".." else 2
-    oracle_path = Path("/".join(path.parts[:idx]))
-    oracle_data = load_performance_data(oracle_path / instance_set, drop_time=True, search_prefix=f"oracle/**/eval/instance_*/")
+    oracle_path = Path("/".join(path.parts[:idx])) / instance_set
+    oracle_data = load_performance_data(oracle_path, drop_time=True, search_prefix=f"oracle/**/eval/instance_*/")
     oracle_data["origin"] = "oracle"
 
     data = pd.concat([data, oracle_data])
@@ -100,14 +100,15 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
     selector_data = load_performance_data(
         path, drop_time=True, search_prefix=f"selector/**/eval/{instance_set_id}/"
     )
-    selector_data["origin"] = "selector"
+    if selector_data:
+        selector_data["origin"] = "selector"
 
-    data = pd.concat([data, selector_data])
-    del selector_data
+        data = pd.concat([data, selector_data])
+        del selector_data
 
-    random_perf_path = path.parent / "random"
+    random_perf_path = oracle_path / "random"
     if random_perf_path.exists():
-        perf_data = load_performance_data(random_perf_path)
+        perf_data = load_performance_data(random_perf_path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/")
         perf_data["origin"] = "random"
         data = pd.concat([data, perf_data])
         del perf_data
