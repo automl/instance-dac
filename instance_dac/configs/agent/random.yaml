@@ -3,6 +3,7 @@ agent_name: random
 agent:
   _target_: dacbench.agents.simple_agents.RandomAgent
   _partial_: True
+  no_shortbox: True
 
 outdir: runs/${benchmark_id}
 hydra:
