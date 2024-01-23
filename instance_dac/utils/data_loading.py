@@ -61,13 +61,15 @@ def _load_single_performance_data(filename: str, drop_time: bool = True) -> pd.D
 
 def load_performance_data(
     path: str | Path, identifier: str = "PerformanceTrackingWrapper.jsonl", search_prefix: str = "", **kwargs
-) -> pd.DataFrame:
+) -> pd.DataFrame | None:
     path = Path(path)
     filenames = list(path.glob(f"**/{search_prefix}{identifier}"))
     print(filenames)
     func = partial(_load_single_performance_data, **kwargs)
     dfs = map_multiprocessing(func, filenames)
-    data = pd.concat(dfs).reset_index(drop=True)
+    data = None
+    if dfs:
+        data = pd.concat(dfs).reset_index(drop=True)
     return data
 
 
