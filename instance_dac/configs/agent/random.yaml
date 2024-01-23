@@ -4,4 +4,10 @@ agent:
   _target_: dacbench.agents.simple_agents.RandomAgent
   _partial_: True
 
-outdir: runs/random/${benchmark_id}
+outdir: runs/${benchmark_id}
+hydra:
+  run:
+    dir: runs/${benchmark_id}/${test_set_id}/${agent_name}/${instance_set_selection}/${seed}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+  sweep:
+    dir: ${outdir}  # /${now:%Y-%m-%d}/${now:%H-%M-%S}
+    subdir: ${test_set_id}/${agent_name}/${instance_set_selection}/${seed}
