@@ -71,10 +71,10 @@ instance_set_selection: selector
 source_instance_set_id: {instance_set_id}
 hydra:
   run:
-    dir: runs/${{benchmark_id}}/${{source_instance_set_id}}/${{instance_set_selection}}/${{instance_set_id}}/${{seed}} 
+    dir: runs/${{benchmark_id}}/${{source_instance_set_id}}/${{agent_name}}/${{instance_set_selection}}/${{instance_set_id}}/${{seed}} 
   sweep:
     dir: runs/${{benchmark_id}}
-    subdir: ${{source_instance_set_id}}/${{instance_set_selection}}/${{instance_set_id}}/${{seed}}
+    subdir: ${{source_instance_set_id}}/${{agent_name}}/${{instance_set_selection}}/${{instance_set_id}}/${{seed}}
 
 selector:
     graph_method: {selection_method}
