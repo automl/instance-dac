@@ -2,8 +2,8 @@
 
 benchmark:  
   config:
-    instance_set_path: ../instance_sets/cma/cma_train.csv
-    test_set_path: ../instance_sets/cma/cma_test.csv
+    instance_set_path: ../../../instance_dac/instance_sets/cmaes/seplow/train.csv
+    test_set_path: ../../../instance_dac/instance_sets/cmaes/seplow/test.csv
 
-instance_set_id: default
-test_set_id: cma_test
+instance_set_id: seplow_train
+test_set_id: seplow_test

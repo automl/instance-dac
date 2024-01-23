@@ -1,7 +1,21 @@
 # @package _global_
 benchmark: 
-  _target_: dacbench.benchmarks.CMAESBenchmark
+  _target_: dacbench.benchmarks.cma_benchmark.CMAESBenchmark
+  config:
+    config_space:
+      _target_: ConfigSpace.ConfigurationSpace
+      space: 
+        step_size:
+          # _target_: dacbench.benchmarks.cma_benchmark.STEP_SIZE
+          _target_: ConfigSpace.api.types.float.Float
+          name: 92_step_size
+          bounds: [0.0, 10.0]
+    # wrappers:
+    #   - instance_dac.wrappers.cmaes_stepsize_wrapper.CMAESStepSizeWrapper
+
 
 benchmark_id: CMA-ES
 num_episodes: 1000
 total_timesteps: 1000000
+
+benchmark_info: ModCMA
