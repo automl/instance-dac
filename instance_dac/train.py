@@ -27,7 +27,8 @@ from dacbench.wrappers import (
 from dacbench.abstract_env import AbstractEnv
 from dacbench.abstract_agent import AbstractDACBenchAgent
 from instance_dac.wrapper import RewardTrackingWrapper
-
+from dacbench.envs.cma_es import CMAESEnv
+from instance_dac.wrappers.cmaes_stepsize_wrapper import CMAESStepSizeWrapper
 import coax
 from stable_baselines3.common.monitor import Monitor
 
@@ -41,18 +42,21 @@ def wrap_and_log(cfg: DictConfig, env: AbstractEnv) -> tuple[AbstractEnv, Logger
     logger = Logger(
         experiment_name=experiment_name,
         output_path=Path("logs"),
-        step_write_frequency=None,
+        step_write_frequency=5000,
         episode_write_frequency=1,
     )
     performance_logger = logger.add_module(PerformanceTrackingWrapper)
 
+    if isinstance(env, CMAESEnv):
+        env = CMAESStepSizeWrapper(env=env)
+
     env = PerformanceTrackingWrapper(env, logger=performance_logger)
     # Reduce log sizes
     if cfg.evaluate:
-        state_logger = logger.add_module(StateTrackingWrapper)
+        # state_logger = logger.add_module(StateTrackingWrapper)
         action_logger = logger.add_module(ActionFrequencyWrapper)
         reward_logger = logger.add_module(RewardTrackingWrapper)
-        env = StateTrackingWrapper(env, logger=state_logger)
+        # env = StateTrackingWrapper(env, logger=state_logger)
         env = ActionFrequencyWrapper(env, logger=action_logger)
         env = RewardTrackingWrapper(env, logger=reward_logger)
 
