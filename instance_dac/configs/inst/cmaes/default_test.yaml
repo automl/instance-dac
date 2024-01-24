@@ -1,0 +1,9 @@
+# @package _global_
+
+benchmark:  
+  config:
+    instance_set_path: ../../../instance_dac/instance_sets/cmaes/seplow/test.csv
+    test_set_path: ../../../instance_dac/instance_sets/cmaes/seplow/test.csv
+
+instance_set_id: seplow_test
+test_set_id: seplow_test
