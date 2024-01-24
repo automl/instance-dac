@@ -86,12 +86,14 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
 
     path = Path(path)
     # Load full train set data, eval on train set
+    printr("Read full from", path)
     data = load_performance_data(path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/")
     data["origin"] = "full"
 
     # Load oracle data
     idx = 3 if str(path.parts[0]) == ".." else 2
     oracle_path = Path("/".join(path.parts[:idx])) / instance_set
+    printr("Read oracle from", oracle_path)
     oracle_data = load_performance_data(oracle_path, drop_time=True, search_prefix=f"oracle/**/eval/instance_*/")
     oracle_data["origin"] = "oracle"
 
@@ -99,6 +101,7 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
     del oracle_data
 
     # Load selector data
+    printr("Read selector from", path)
     selector_data = load_performance_data(
         path, drop_time=True, search_prefix=f"selector/**/eval/{instance_set_id}/"
     )
@@ -109,6 +112,7 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
         del selector_data
 
     random_perf_path = oracle_path / "random"
+    printr("Read random from path", random_perf_path)
     if random_perf_path.exists():
         perf_data = load_performance_data(random_perf_path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/")
         perf_data["origin"] = "random"
