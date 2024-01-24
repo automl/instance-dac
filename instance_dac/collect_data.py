@@ -38,12 +38,15 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     }
 
     # Read performance data
-    logs = load_logs(eval_dir / perf_fn)
-    perf_df = log2dataframe(logs, wide=True)
+    # Encoded in rewards
+    # logs = load_logs(eval_dir / perf_fn)
+    # perf_df = log2dataframe(logs, wide=True)
 
     # Read state data
-    logs = load_logs(eval_dir / state_fn)
-    state_df = log2dataframe(logs, wide=True)
+    state_df = None
+    if (eval_dir / state_fn).is_file():
+        logs = load_logs(eval_dir / state_fn)
+        state_df = log2dataframe(logs, wide=True)
 
     # Read reward data
     logs = load_logs(eval_dir / reward_fn)
@@ -56,7 +59,10 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     index_columns = ["episode", "step", "seed", "instance"]
 
     # df = perf_df.merge(state_df)
-    df = state_df.merge(reward_df)
+    if state_df:
+        df = state_df.merge(reward_df)
+    else:
+        df = reward_df
     df = df.merge(action_df)
 
     for k, v in cfg_small.items():
@@ -65,9 +71,9 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     return df
 
 
-def load_traineval_trajectories(path: str) -> pd.DataFrame:
+def load_traineval_trajectories(path: str, train_instance_set_id: str) -> pd.DataFrame:
     path = Path(path)
-    eval_dirs = list(path.glob("**/eval/*"))
+    eval_dirs = list(path.glob(f"**/eval/{train_instance_set_id}/"))
     eval_dirs.sort()
     printr(eval_dirs)
     common_path = os.path.commonpath(eval_dirs)
@@ -83,5 +89,6 @@ def load_traineval_trajectories(path: str) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    path = Path("runs/Sigmoid/2D3M_train/ppo/full")
-    df = load_traineval_trajectories(path=path)
+    path, train_instance_set_id = Path("runs/Sigmoid/2D3M_train/ppo/full"), "2D3M_train"
+    path, train_instance_set_id = Path("runs/CMA-ES/seplow_train/ppo_sb3/full"), "train"
+    df = load_traineval_trajectories(path=path, train_instance_set_id=train_instance_set_id)

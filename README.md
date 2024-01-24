@@ -30,6 +30,7 @@ rsync -azv --delete -e 'ssh -J intexml2@fe.noctua2.pc2.uni-paderborn.de' intexml
 #####################################################
 # 0. Evaluate random baseline on 2D3M
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True eval_on_train_set=True agent=random 'seed=range(1,11)' -m
+python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluate=True agent=random 'seed=range(1,11)' -m
 
 # 1. Train on 2D3M_train for 10 seeds
 python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,11)' -m
@@ -51,10 +52,10 @@ python instance_dac/train.py +benchmark=sigmoid +inst/sigmoid=2D3M_train evaluat
 #            `main.py`. Problem is that threads cannot be created properly.
 python instance_dac/main.py +benchmark=sigmoid +inst/sigmoid=2D3M_train 'seed=range(1,11)' -m --oracle --dry
 # e.g.
-python instance_dac/train.py +benchmark=sigmoid 'seed=range(1,4)' '+inst/sigmoid/oracle_2D3M_train=glob(*)' 'instance_set_selection=oracle' +cluster=local -m
-python instance_dac/train.py +benchmark=sigmoid 'seed=range(4,7)' '+inst/sigmoid/oracle_2D3M_train=glob(*)' 'instance_set_selection=oracle' +cluster=local -m
-python instance_dac/train.py +benchmark=sigmoid 'seed=range(7,10)' '+inst/sigmoid/oracle_2D3M_train=glob(*)' 'instance_set_selection=oracle' +cluster=local -m
-python instance_dac/train.py +benchmark=sigmoid 'seed=range(10,11)' '+inst/sigmoid/oracle_2D3M_train=glob(*)' 'instance_set_selection=oracle' -m
+python instance_dac/train.py +benchmark=sigmoid 'seed=range(1,4)' '+inst/sigmoid/oracle_2D3M_test=glob(*)' 'instance_set_selection=oracle' +cluster=noctua hydra.launcher.timeout_min=120 evaluate=True -m
+python instance_dac/train.py +benchmark=sigmoid 'seed=range(4,7)' '+inst/sigmoid/oracle_2D3M_test=glob(*)' 'instance_set_selection=oracle' +cluster=noctua hydra.launcher.timeout_min=120 -m
+python instance_dac/train.py +benchmark=sigmoid 'seed=range(7,10)' '+inst/sigmoid/oracle_2D3M_test=glob(*)' 'instance_set_selection=oracle' +cluster=noctua hydra.launcher.timeout_min=120 -m
+python instance_dac/train.py +benchmark=sigmoid 'seed=range(10,11)' '+inst/sigmoid/oracle_2D3M_test=glob(*)' 'instance_set_selection=oracle' +cluster=noctua hydra.launcher.timeout_min=120 -m
 
 # Final Evaluation
 # (a) on oracle train instance
@@ -86,7 +87,7 @@ python instance_dac/train.py +benchmark=sigmoid '+inst/sigmoid/selector/source_2
 # CMA-ES
 #####################################################
 # 0. Evaluate random baseline
-python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default evaluate=True eval_on_train_set=True agent=random 'seed=range(1,11)' -m
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default evaluate=True agent=random 'seed=range(1,11)' -m
 
 
 # SB3 PPO
@@ -97,10 +98,13 @@ python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,
 # Eval on train
 python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,11)' +cluster=noctua agent=ppo_sb3 evaluate=True eval_on_train_set=True -m
 # Train oracle
-python instance_dac/main.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,11)' -m --oracle --dry
+python instance_dac/main.py +benchmark=cmaes +inst/cmaes=default 'seed=range(1,11)' agent=ppo_sb3 -m --oracle --dry
 # --->
-python instance_dac/train.py +benchmark=cmaes 'seed=range(1,11)' '+inst/cmaes/oracle_default=glob(*)' 'instance_set_selection=oracle' +cluster=noctua -m
+# DONT FORGET TO ADD THE AGENT
+python instance_dac/train.py +benchmark=cmaes 'seed=range(1,11)' '+inst/cmaes/oracle_default=glob(*)' 'instance_set_selection=oracle' +cluster=noctua agent=ppo_sb3 -m
 
+# Eval random agent
+python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default evaluate=True agent=random 'seed=range(1,11)' -m
 ```
 
 
@@ -122,7 +126,7 @@ pip install -r requirements.txt
 git clone git@github.com:automl/DACBench.git
 cd DACBench
 git checkout instance_dac
-pip install -e .
+pip install -e .[modcma]
 
 
 
