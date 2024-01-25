@@ -59,7 +59,7 @@ def get_eval_df(eval_dir: Path) -> pd.DataFrame:
     index_columns = ["episode", "step", "seed", "instance"]
 
     # df = perf_df.merge(state_df)
-    if state_df:
+    if state_df is not None:
         df = state_df.merge(reward_df)
     else:
         df = reward_df
@@ -84,11 +84,12 @@ def load_traineval_trajectories(path: str, train_instance_set_id: str) -> pd.Dat
         dfs = pool.map(get_eval_df, eval_dirs)
 
     df = pd.concat(dfs).reset_index(drop=True)
+    printr(df_fn)
     df.to_csv(df_fn, index=False)
     return df
 
 
 if __name__ == "__main__":
-    path, train_instance_set_id = Path("runs/Sigmoid/2D3M_train/ppo/full"), "2D3M_train"
-    path, train_instance_set_id = Path("runs/CMA-ES/seplow_train/ppo_sb3/full"), "train"
+    path, train_instance_set_id = Path("runs/Sigmoid/2D3M_train/ppo/full"), "sigmoid_2D3M_train"
+    # path, train_instance_set_id = Path("runs/CMA-ES/seplow_train/ppo_sb3/full"), "train"
     df = load_traineval_trajectories(path=path, train_instance_set_id=train_instance_set_id)

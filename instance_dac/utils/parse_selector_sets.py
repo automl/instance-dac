@@ -20,7 +20,8 @@ def generate_instance_set(fname: str | Path):
     feature_type = fname.parts[6]
     source_features = fname.parts[7]
     threshold = fname.parts[8]
-    selector_run = fname.name.split("_")[2]
+    seed = fname.parts[9]
+    selector_run = fname.name.split("_")[-1].split(".")[0]
 
     source_instance_set = Path(
         f"DACBench/dacbench/instance_sets/{benchmark_id.lower()}/{benchmark_id.lower()}_{instance_set_id}.csv"
@@ -51,6 +52,7 @@ def generate_instance_set(fname: str | Path):
         / feature_type
         / source_features
         / threshold
+        / seed
         / f"{selector_run}.csv"
     )
     target_fname.parent.mkdir(exist_ok=True, parents=True)
@@ -81,7 +83,8 @@ selector:
     feature_type: {feature_type}
     feature_source: {source_features}
     threshold: {threshold}
-    seed: {selector_run}
+    seed: {seed}
+    run: {selector_run}
 """
     selector_instance_set_id = f"{instance_set_id}__{selected_on}__{selection_method}__{feature_type}__{source_features}__{threshold}__{selector_run}"
     content = template.format(
@@ -92,6 +95,7 @@ selector:
         feature_type=feature_type,
         source_features=source_features,
         threshold=threshold,
+        seed=seed,
         selector_run=selector_run,
     )
 
