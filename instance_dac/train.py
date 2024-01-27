@@ -185,6 +185,9 @@ def make_agent(cfg: DictConfig, env: AbstractEnv, logger: Logger) -> AbstractDAC
 
 @hydra.main(config_path="configs", config_name="base.yaml")
 def main(cfg: DictConfig) -> None:
+    if cfg.instance_set_selection == "selector":
+        if cfg.selector.seed != cfg.seed:
+            return None
     cfg_dict = OmegaConf.to_container(cfg=cfg, resolve=True)
     printr(cfg_dict)
     benchmark = make_benchmark(cfg=cfg)
@@ -203,6 +206,7 @@ def main(cfg: DictConfig) -> None:
         if hasattr(agent, "load"):
             agent.load(Path(logger.output_path).parent)
         evaluate(env, agent, logger, cfg.num_eval_episodes)
+    return None
 
 
 if __name__ == "__main__":
