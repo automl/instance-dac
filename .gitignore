@@ -138,3 +138,5 @@ instance_dac/configs/inst/**/selector*
 instance_dac/instance_sets/**/selector
 *.csv
 container*
+*.pdf
+*.pickle
