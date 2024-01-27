@@ -105,7 +105,7 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
     selector_data = load_performance_data(
         path, drop_time=True, search_prefix=f"selector/**/eval/{instance_set_id}/"
     )
-    if selector_data:
+    if selector_data is not None:
         selector_data["origin"] = "selector"
 
         data = pd.concat([data, selector_data])
