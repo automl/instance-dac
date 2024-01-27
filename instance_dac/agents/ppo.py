@@ -137,3 +137,9 @@ class PPO(AbstractDACBenchAgent):
 
     def load(self, path: Path):
         self.__dict__ = coax.utils.load(path / f"agent.pkl.lz4")
+
+    def train(self, next_state, reward):
+        pass
+
+    def end_episode(self, state, reward):
+        pass
