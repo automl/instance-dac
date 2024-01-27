@@ -140,3 +140,4 @@ instance_dac/instance_sets/**/selector
 container*
 *.pdf
 *.pickle
+*.png
