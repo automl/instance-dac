@@ -63,6 +63,7 @@ def load_performance_data(
     path: str | Path, identifier: str = "PerformanceTrackingWrapper.jsonl", search_prefix: str = "", **kwargs
 ) -> pd.DataFrame | None:
     path = Path(path)
+    printr("Load perf data from ", str(path.resolve()) + f"**/{search_prefix}{identifier}")
     filenames = list(path.glob(f"**/{search_prefix}{identifier}"))
     print(filenames)
     func = partial(_load_single_performance_data, **kwargs)
@@ -86,7 +87,7 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
 
     path = Path(path)
     # Load full train set data, eval on train set
-    printr("Read full from", path)
+    printr("Read full from", path.resolve())
     data = load_performance_data(path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/")
     data["origin"] = "full"
 
