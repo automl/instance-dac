@@ -25,7 +25,7 @@ class LoggerCallback(BaseCallback):
                 self.db_logger.next_episode()
 
         return super().on_step()
-    
+
 
 class CheckpointCallback(BaseCallback):
     """
@@ -89,7 +89,7 @@ class CheckpointCallback(BaseCallback):
             self.model.save(model_path)
             if self.verbose >= 2:
                 print(f"Saving model checkpoint to {model_path}")
-        
+
         return True
 
 

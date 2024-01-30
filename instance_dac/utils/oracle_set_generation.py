@@ -7,7 +7,9 @@ import ast
 from rich import print as printr
 
 
-def generate_oracle_set(instance_set_path: str, instance_set_id: str, benchmark_id: str, test_set_path: str) -> tuple[str, int]:
+def generate_oracle_set(
+    instance_set_path: str, instance_set_id: str, benchmark_id: str, test_set_path: str
+) -> tuple[str, int]:
     template = """
 # @package _global_
 
@@ -82,6 +84,6 @@ if __name__ == "__main__":
         instance_set_path=instance_set_path,
         instance_set_id=instance_set_id,
         benchmark_id=benchmark_id,
-        test_set_path=test_set_path
+        test_set_path=test_set_path,
     )
     print(override)

@@ -54,7 +54,7 @@ def generate_instance_set(fname: str | Path):
     offset = 0
     if benchmark_id == "CMA-ES":
         offset = 1
-    filtered_set = [lines[i+1] for i in instance_ids]
+    filtered_set = [lines[i + 1] for i in instance_ids]
     if benchmark_id == "CMA-ES":
         filtered_set = [lines[0]] + filtered_set
 
