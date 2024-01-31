@@ -110,11 +110,11 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
         data = pd.concat([data, selector_data])
         del selector_data
 
-    random_perf_path = oracle_path / "random"
+    random_perf_path = path
     printr("Read random from path", random_perf_path)
     if random_perf_path.exists():
         perf_data = load_performance_data(
-            random_perf_path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/"
+            random_perf_path, drop_time=True, search_prefix=f"random/**/eval/{instance_set_id}/"
         )
         perf_data["origin"] = "random"
         data = pd.concat([data, perf_data])

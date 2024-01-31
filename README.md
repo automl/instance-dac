@@ -117,7 +117,7 @@ python instance_dac/train.py +benchmark=cmaes +inst/cmaes=default evaluate=True 
 
 
 # train on random subsets
-python instance_dac/train.py +benchmark=cmaes 'seed=range(1,11)' '+inst/sigmoid/random=glob(*)' 'instance_set_selection=random' +cluster=noctua agent=ppo_sb3 -m
+python instance_dac/train.py +benchmark=cmaes 'seed=range(1,11)' '+inst/cmaes/random=glob(*)' 'instance_set_selection=random' +cluster=noctua agent=ppo_sb3 -m
 
 ```
 
