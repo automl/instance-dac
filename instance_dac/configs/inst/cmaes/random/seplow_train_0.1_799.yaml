@@ -1,0 +1,79 @@
+# @package _global_
+
+instance_set_id: seplow_train_0.1_799
+instance_set_selection: random
+selector:
+  seed: 799
+  fraction: 0.1
+source_instance_set_id: seplow_train
+benchmark:
+  config:
+    instance_set:
+      16:
+      - 10
+      - 5
+      - 0
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      17:
+      - 10
+      - 5
+      - 1
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      26:
+      - 10
+      - 7
+      - 2
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+      35:
+      - 10
+      - 9
+      - 3
+      - - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+        - 0
+    instance_set_path: null
+    test_set_path: ../../../instance_dac/instance_sets/cmaes/seplow/test.csv
+hydra:
+  run:
+    dir: runs/${benchmark_id}/${source_instance_set_id}/${agent_name}/${instance_set_selection}/${instance_set_id}/${seed}
+  sweep:
+    dir: runs/${benchmark_id}
+    subdir: ${source_instance_set_id}/${agent_name}/${instance_set_selection}/${instance_set_id}/${seed}
