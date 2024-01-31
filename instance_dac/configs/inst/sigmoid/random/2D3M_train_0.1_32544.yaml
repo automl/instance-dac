@@ -159,3 +159,11 @@ benchmark:
       - 4.854325379155132
       - -6.404191877907916
       - 0.3611679915156436
+    instance_set_path: null
+    test_set_path: ../instance_sets/sigmoid/sigmoid_2D3M_test.csv
+hydra:
+  run:
+    dir: runs/${benchmark_id}/${source_instance_set_id}/${agent_name}/${instance_set_selection}/${instance_set_id}/${seed}
+  sweep:
+    dir: runs/${benchmark_id}
+    subdir: ${source_instance_set_id}/${agent_name}/${instance_set_selection}/${instance_set_id}/${seed}
