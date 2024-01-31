@@ -84,7 +84,7 @@ def main():
             instance_set_path=cfg.benchmark.config.test_set_path,
             instance_set_id=cfg.test_set_id,
             benchmark_id=cfg.benchmark_id,
-            test_set_path=cfg.benchmark.config.test_set_path
+            test_set_path=cfg.benchmark.config.test_set_path,
         )
         # Remove inst set and add new override
         unknown_args = [o for o in unknown_args if "inst" not in o]

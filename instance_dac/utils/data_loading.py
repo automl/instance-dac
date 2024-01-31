@@ -103,9 +103,7 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
 
     # Load selector data
     printr("Read selector from", path)
-    selector_data = load_performance_data(
-        path, drop_time=True, search_prefix=f"selector/**/eval/{instance_set_id}/"
-    )
+    selector_data = load_performance_data(path, drop_time=True, search_prefix=f"selector/**/eval/{instance_set_id}/")
     if selector_data is not None:
         selector_data["origin"] = "selector"
 
@@ -115,7 +113,9 @@ def load_eval_data(path: str | Path, instance_set_id: str, instance_set: str) ->
     random_perf_path = oracle_path / "random"
     printr("Read random from path", random_perf_path)
     if random_perf_path.exists():
-        perf_data = load_performance_data(random_perf_path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/")
+        perf_data = load_performance_data(
+            random_perf_path, drop_time=True, search_prefix=f"full/**/eval/{instance_set_id}/"
+        )
         perf_data["origin"] = "random"
         data = pd.concat([data, perf_data])
         del perf_data

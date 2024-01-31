@@ -10,7 +10,7 @@ class CMAESStepSizeWrapper(ActionWrapper):
     def __init__(self, env: Env):
         super().__init__(env)
 
-        self.action_space = Box(0., 10.)
+        self.action_space = Box(0.0, 10.0)
 
     def action(self, action: Any) -> Any:
         complete_action = OrderedDict({"step_size": action})
