@@ -1,0 +1,24 @@
+
+# @package _global_
+
+benchmark:  
+    config:
+        instance_set_path: ../../../data/instance_sets/selected/generated/Sigmoid/2D3M_train/Train/MIS/Catch22/RAI/0.95/1.csv
+        test_set_path: ../instance_sets/sigmoid/sigmoid_2D3M_test.csv
+
+instance_set_id: 2D3M_train__Train__MIS__Catch22__RAI__0.95__1
+instance_set_selection: selector
+source_instance_set_id: 2D3M_train
+hydra:
+  run:
+    dir: runs/${benchmark_id}/${source_instance_set_id}/${instance_set_selection}/${instance_set_id}/${seed} 
+  sweep:
+    dir: runs/${benchmark_id}
+    subdir: ${source_instance_set_id}/${instance_set_selection}/${instance_set_id}/${seed}
+
+selector:
+    graph_method: MIS
+    feature_type: Catch22
+    feature_source: RAI
+    threshold: 0.95
+    seed: 1

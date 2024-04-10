@@ -1,0 +1,18 @@
+
+# @package _global_
+
+benchmark:  
+    config:
+        instance_set_path: ../../../instance_dac/instance_sets/sigmoid/2D3M_train/oracle/instance_267.csv
+        test_set_path: ../instance_sets/sigmoid/sigmoid_2D3M_test.csv
+
+instance_set_id: 2D3M_train_oracle_267
+instance_id: 267
+instance_set_selection: oracle
+source_instance_set_id: 2D3M_train
+hydra:
+  run:
+    dir: runs/${benchmark_id}/2D3M_train/${instance_set_selection}/instance_${instance_id}/${seed} 
+  sweep:
+    dir: runs/${benchmark_id}
+    subdir: 2D3M_train/${instance_set_selection}/instance_${instance_id}/${seed}
