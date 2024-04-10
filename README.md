@@ -34,6 +34,9 @@ git clone https://github.com/gjorgjinac/InstanceDACSelector.git lib/InstanceDACS
 pip install -r lib/InstanceDACSelector/requirements.txt
 ```
 
+## Experiments
+Check `scripts/sigmoid_experiment.sh` and `scripts/cmaes_experiment.sh` for commands/details how to run the experiments.
+
 ## Data
 With the script `instance_dac/collect_data.py` you can gather all the log files and create a csv file.
 The table will be saved under `data/runs/<env_name>/<training_set>` and can contain performance data
