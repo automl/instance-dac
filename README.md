@@ -37,6 +37,13 @@ pip install -r lib/InstanceDACSelector/requirements.txt
 ## Experiments
 Check `scripts/sigmoid_experiment.sh` and `scripts/cmaes_experiment.sh` for commands/details how to run the experiments.
 
+## Calculating Meta-Features
+In order to build the similarity graph of instances we need to calculate meta-features.
+In this case, we calculate time-series features on the rollout history, e.g., the reward trajectory per episode.
+For this, R requirements need to be installed (R version 4.0.2 (2020-06-22), Rcatch22_0.1.13 package is used).
+The code to calculate the features is [here](https://github.com/automl/instance-dac/blob/main/instance_dac/meta_features/calc_meta_features.r).
+The filepaths need to be adjusted accordingly.
+
 ## Data
 With the script `instance_dac/collect_data.py` you can gather all the log files and create a csv file.
 The table will be saved under `data/runs/<env_name>/<training_set>` and can contain performance data
