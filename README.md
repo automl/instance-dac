@@ -9,6 +9,8 @@ For constructing the meta-features for the subset selection, we particularly acc
 Through empirical evaluations on the Sigmoid and CMA-ES benchmarks from the standard benchmark library for DAC, called DACBench, we discuss the potentials of our selection technique compared to training on the entire instance set.
 Our results highlight the efficacy of instance selection in refining DAC policies for diverse instance spaces.
 
+See our [blog post](https://automl.space/selecting-instances-and-improving-generalization-of-dynamic-algorithm-configuration/) for more information.
+
 ## Installation
 ```bash
 git clone https://github.com/automl/Instance-DAC.git
